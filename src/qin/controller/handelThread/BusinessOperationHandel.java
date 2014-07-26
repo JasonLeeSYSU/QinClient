@@ -277,7 +277,9 @@ public class BusinessOperationHandel {
 			messagePacket.setCreateQunContainer(createQunContainer);
 			QinMessagePacket createQunResultPacket = MessagePacketSender.sendPacket(messagePacket);
 			
-			if( createQunResultPacket.getCommand().equals(Command.CREATEQUNSUCCESS)) {
+			System.out.println(createQunResultPacket.getCommand());
+			
+			if(createQunResultPacket.getCommand().equals(Command.CREATEQUNSUCCESS)) {
 				qunId = (Integer.valueOf(createQunResultPacket.getResponseMsg())).intValue();
 			}
 		} catch (ClassNotFoundException e) {

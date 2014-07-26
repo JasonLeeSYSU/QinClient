@@ -195,6 +195,7 @@ public class QinUIController implements Runnable  {
 								quns = loginResultPacket.getQunListContainer().getQunList();
 								ArrayList<User> myFriends = loginResultPacket.getUserListContainer().getUserList();
 								
+								
 								for(int i = 0; i < myFriends.size(); i++) {
 									if(myFriends.get(i).isUserOnline())
 										onlineFriends.add(myFriends.get(i));
@@ -290,6 +291,7 @@ public class QinUIController implements Runnable  {
 				@Override
 				public void windowClosing(java.awt.event.WindowEvent e) {
 					try {
+						System.out.println("退出");
 						BusinessOperationHandel.logout(user.getUid());
 						//heartBeatThread.stop();
 					} catch (ClassNotFoundException | IOException e1) {

@@ -152,7 +152,7 @@ public class ShowApplicationUI {
 		    refuseButton = new JButton("拒绝");
 		    refuseButton.setBounds(new Rectangle(Width*1/2-12, Height*1/4+5, Width/6, Height*1/8));
 		    
-		    agreeButton.addActionListener(new ActionListener() {
+		    refuseButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					refuseUser();
