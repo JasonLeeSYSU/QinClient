@@ -1,0 +1,399 @@
+package qin.controller.handelThread;
+
+import java.io.*;
+import java.net.Inet4Address;
+import java.util.ArrayList;
+
+import qin.controller.handelThread.basicOperation.MessagePacketSender;
+import qin.model.*;
+import qin.model.domainClass.*;
+import qin.model.msgContainer.*;
+
+public class BusinessOperationHandel {
+	
+	/***
+	 * return the userId if register successfully
+	 * return -1(Resource.LoginFailUserID) if register unsuccessfully.
+	 * @param nickname
+	 * @param password
+	 * @param email
+	 * @param age
+	 * @param gender
+	 * @param address
+	 * @param headImage
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public static int register(String nickname, String password, String email, int age, String gender, Address address, String headImage) throws ClassNotFoundException, IOException {
+		int userId = Resource.RegisterFailUserID;
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.REGISTER);
+			
+			User user = new User();
+			user.setNickName(nickname);
+			user.setPassword(password);
+			user.setEmail(email);
+			user.setAge(age);
+			user.setGender(gender);
+			user.setAddress(address);
+			user.setHeadImage(headImage);
+			
+			RegisterContainer registerContainer = new RegisterContainer(user);
+			
+			messagePacket.setRegisterContainer(registerContainer);
+			QinMessagePacket registerResultPacket = MessagePacketSender.sendPacket(messagePacket);
+			
+			if(registerResultPacket.getCommand().equals(Command.REGISTERSUCCESS)) {
+				userId = (Integer.valueOf(registerResultPacket.getResponseMsg())).intValue();
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userId;
+	}
+
+	/***
+	 * return TRUE if login successfully
+	 * return FALSE if login unsuccessfully.
+	 * @param userID
+	 * @param password
+	 * @param listenPort
+	 * @param offLineMsg
+	 * @param friends
+	 * @param quns
+	 * @param addFriendContainers
+	 * @param joinQunContainers
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public static User login(int userID, String password, int listenPort,
+			ArrayList<Message> offLineMsg,
+			ArrayList<User> friends,
+			ArrayList<Qun> quns,
+			ArrayList<AddFriendContainer> addFriendContainers,
+			ArrayList<JoinQunContainer> joinQunContainers
+			) throws ClassNotFoundException, IOException {
+		User loginUser = null;
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.LOGIN);
+			
+			User user = new User();
+			user.setUid(userID);
+			user.setPassword(password);
+			user.setIPAddr(Inet4Address.getLocalHost().getHostAddress());
+			user.setPort(listenPort);
+			LoginContainer loginContainer = new LoginContainer(user);
+			
+			messagePacket.setLoginContainer(loginContainer);
+			QinMessagePacket loginResultPacket = MessagePacketSender.sendPacket(messagePacket);
+			
+			if( loginResultPacket.getCommand().equals(Command.LOGINSUCCESS)) {
+				loginUser = loginResultPacket.getLoginContainer().getUser();
+				offLineMsg = loginResultPacket.getMessageListContainer().getMessageList();
+				friends = loginResultPacket.getUserListContainer().getUserList();
+				quns = loginResultPacket.getQunListContainer().getQunList();
+				addFriendContainers = loginResultPacket.getAddFriendListContainer().getAddFriendList();
+				joinQunContainers = loginResultPacket.getJoinQunListContainer().getJoinQunList();
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return loginUser;
+	}
+	
+	
+	/***
+	 * logout
+	 * @param userID
+	 * @param password
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public static void logout(int userID) throws ClassNotFoundException, IOException {
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.LOGOUT);
+			
+			LogoutContainer logoutContainer = new LogoutContainer(userID);
+			
+			messagePacket.setLogoutContainer(logoutContainer);
+			MessagePacketSender.sendPacket(messagePacket);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/***
+	 * 
+	 * @param sourceId
+	 * @param destinationId
+	 * @param detail
+	 * @param isQunMsg
+	 */
+	public static void sendMessage(int sourceId, int destinationId, String detail, boolean isQunMsg) {
+		QinMessagePacket messagePacket = new QinMessagePacket(null);
+		if (isQunMsg) {
+			messagePacket.setCommand(Command.SENDQUNMSG);
+		} else {
+			messagePacket.setCommand(Command.SENDPRIVATEMSG);
+		}
+		
+		Message message = new Message();
+		message.setSourceId(sourceId);
+		message.setDestinationId(destinationId);
+		message.setDetail(detail);
+		
+		MessageContainer messageContainer = new MessageContainer(message);
+		
+		messagePacket.setMessageContainer(messageContainer);
+	}
+	
+
+	/***
+	 * find user
+	 * return the User if find a user successfully
+	 * return the null pointer otherwise. 
+	 * @param userID
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public static User findUser(int userID) throws ClassNotFoundException, IOException {
+		User userResult = null;
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.FINDUSER);
+			
+			User user = new User();
+			user.setUid(userID);
+			FindUserContainer findUserContainer = new FindUserContainer(user);
+			
+			messagePacket.setFindUserContainer(findUserContainer);
+			QinMessagePacket findUserResultPacket = MessagePacketSender.sendPacket(messagePacket);
+			
+			if( findUserResultPacket.getCommand().equals(Command.GAINUSERINFO)) {
+				userResult = findUserResultPacket.getFindUserContainer().getUser();
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userResult;
+	}
+	
+	public static void addFriend(int sourceId, int friendId) {
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.ADDFRIEND);
+			AddFriendContainer addFriendContainer = new AddFriendContainer(sourceId, friendId);
+			messagePacket.setAddFriendContainer(addFriendContainer);
+			MessagePacketSender.sendPacket(messagePacket);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void deleteFriend(int sourceId, int friendId) {
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.DELETEFRIEND);
+			DeleteFriendContainer deleteFriendContainer = new DeleteFriendContainer(sourceId, friendId);
+			messagePacket.setDeleteFriendContainer(deleteFriendContainer);
+			MessagePacketSender.sendPacket(messagePacket);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+
+	/***
+	 * find qun
+	 * return the qun if find a qun successfully
+	 * return the null pointer otherwise.
+	 * @param qunID
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
+	public static Qun findQun(int qunID) throws ClassNotFoundException, IOException {
+		Qun qunResult = null;
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.FINDQUN);
+			
+			Qun qun = new Qun();
+			qun.setQunID(qunID);
+			FindQunContainer findQunContainer = new FindQunContainer(qun);
+			
+			messagePacket.setFindQunContainer(findQunContainer);
+			QinMessagePacket findQunResultPacket = MessagePacketSender.sendPacket(messagePacket);
+			
+			if( findQunResultPacket.getCommand().equals(Command.GAINQUNINFO)) {
+				qunResult = findQunResultPacket.getFindQunContainer().getQun();
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return qunResult;
+	}
+	
+	// 
+	/***
+	 * create qun
+	 * return the Qun ID if create a qun successfully
+	 * return -1(Resource.CreateQunFailQunID) otherwise.
+	 * @param qunOwnerId
+	 * @param qunName
+	 * @param qunDescription
+	 * @return
+	 */
+	public static int createQun(int qunOwnerId, String qunName, String qunDescription) {
+		int qunId = Resource.CreateQunFailQunID;
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.CREATEQUN);
+			
+			Qun qun = new Qun();
+			qun.setQunOwnerID(qunOwnerId);
+			qun.setQunName(qunName);
+			qun.setQunDescription(qunDescription);
+			
+			CreateQunContainer createQunContainer = new CreateQunContainer(qun);
+			
+			messagePacket.setCreateQunContainer(createQunContainer);
+			QinMessagePacket createQunResultPacket = MessagePacketSender.sendPacket(messagePacket);
+			
+			if( createQunResultPacket.getCommand().equals(Command.CREATEQUNSUCCESS)) {
+				qunId = (Integer.valueOf(createQunResultPacket.getResponseMsg())).intValue();
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return qunId;
+	}
+	
+	public static void joinQun(int userId, int qunId) {
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.JOININQUN);
+			JoinQunContainer joinQunContainer = new JoinQunContainer(userId, qunId);
+			messagePacket.setJoinQunContainer(joinQunContainer);
+			MessagePacketSender.sendPacket(messagePacket);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void exitQun(int userId, int qunId) {
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.EXITQUN);
+			ExitQunContainer exitQunContainer = new ExitQunContainer(userId, qunId);
+			messagePacket.setExitQunContainer(exitQunContainer);
+			MessagePacketSender.sendPacket(messagePacket);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void modifyUserInfo(User user) {
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.MODIFYUSERINFO);
+			ModifyUserInfoContainer modifyUserInfoContainer = new ModifyUserInfoContainer(user);
+			messagePacket.setModifyUserInfoContainer(modifyUserInfoContainer);
+			MessagePacketSender.sendPacket(messagePacket);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void modifyQunInfo(Qun qun) {
+		try {			
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.MODIFYQUNINFO);
+			ModifyQunInfoContainer modifyQunInfoContainer = new ModifyQunInfoContainer(qun);
+			messagePacket.setModifyQunInfoContainer(modifyQunInfoContainer);
+			MessagePacketSender.sendPacket(messagePacket);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	// the first parameter is the id of the user who want to add a friend
+	// the second parameter is the id of the user who is requested to be added
+	// the third parameter is a boolean value:
+//	         the true value represents 'agree' and the false value represents 'disagree' 
+	public static void respondAddFriendApplication(int sourceId, int userId, boolean ifAgree) {
+		try {
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.RESPONDADDFRIENDAPPLICATION);
+			RespondAddFriendApplicationContainer rafac = new RespondAddFriendApplicationContainer(sourceId, userId, ifAgree);
+			messagePacket.setRespondAddFriendApplicationContainer(rafac);
+			MessagePacketSender.sendPacket(messagePacket);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	// the first parameter is the id of the user who want to join a QUN
+	// the second parameter is the id of the QUN
+	// the third parameter is a boolean value:
+//	         the true value represents 'agree' and the false value represents 'disagree' 
+	public static void respondJoinQunApplication(int sourceId, int qunId, boolean ifAgree) {
+		try {
+				QinMessagePacket messagePacket = new QinMessagePacket(Command.RESPONDJOINQUNAPPLICATION);
+				RespondJoinQunApplicationContainer rjqac = new RespondJoinQunApplicationContainer(sourceId, qunId, ifAgree);
+				messagePacket.setRespondJoinQunApplicationContainer(rjqac);
+				MessagePacketSender.sendPacket(messagePacket);;
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
