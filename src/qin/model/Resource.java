@@ -40,8 +40,7 @@ public class Resource {
 	
 	public final static int MessageMaxCharacter = 170;
 	
-	//public final static String ServerIP = "172.19.202.225";
-	public final static String ServerIP = "127.0.0.1";
+	public final static String ServerIP = "172.19.202.225";
 	 
 	public final static int ServerPort = 6687;
 	
