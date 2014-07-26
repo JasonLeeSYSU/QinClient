@@ -17,6 +17,8 @@ import qin.controller.handelThread.HeartBeatThread;
 import qin.controller.handelThread.ReceiveApplicationResponseThread;
 import qin.controller.handelThread.ReceiveApplicationThread;
 import qin.controller.handelThread.ReceiveMessageThread;
+import qin.model.Command;
+import qin.model.QinMessagePacket;
 import qin.model.Resource;
 import qin.model.domainClass.Address;
 import qin.model.domainClass.Message;
@@ -36,13 +38,13 @@ import qin.ui.ShowApplicationUI;
 import qin.ui.ShowQunInfoUI;
 import qin.ui.ShowUserInfoUI;
 
-public class QinUIController{
+public class QinUIController implements Runnable  {
 	private static QinUIController SingleUIController = null;
 	private static int ClientListenerPort = -1;
 	
 	private User user = null;
-	private List<User> onlineFriends = null;
-	private List<User> offlineFriends = null;
+	private List<User> onlineFriends = new ArrayList<User>();
+	private List<User> offlineFriends = new ArrayList<User>();
 	private List<Qun> quns = null;
 	
 	private LoginUI loginUI= null;
@@ -53,6 +55,8 @@ public class QinUIController{
 	
 	private List<MessageUI> PrivateMessageUIs = new ArrayList<MessageUI>();
 	private List<MessageUI> QunMessageUIs = new ArrayList<MessageUI>();
+	
+	//HeartBeatThread heartBeatThread = null;
 	
 	/***
 	 * 把构造函数声明为private
@@ -78,6 +82,12 @@ public class QinUIController{
 	 * 运行（显示）登录界面
 	 */
 	public void RunLoginUI() {
+		getLoginUI().showLoginUI();
+	}
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
 		getLoginUI().showLoginUI();
 	}
 	
@@ -166,23 +176,24 @@ public class QinUIController{
 				public void actionPerformed(ActionEvent e) {
 						System.out.println("登录");
 						
-						HeartBeatThread heartBeatThread = new HeartBeatThread(user.getUid());
-						heartBeatThread.start();
+						//heartBeatThread = new HeartBeatThread(user.getUid());
+						//heartBeatThread.start();
 						
 						int loginID = new Integer(loginUI.getIDField().getText());
 						String password = loginUI.getPasswordField().getText();
-						ArrayList<Message> offLineMsg = new ArrayList<Message>();
-						ArrayList<User> myFriends = new ArrayList<User>();
-						ArrayList<Qun> myQuns = new ArrayList<Qun>();
-						
-						ArrayList<AddFriendContainer> addFriendContainers = new ArrayList<AddFriendContainer>();
-						ArrayList<JoinQunContainer> joinQunContainers = new ArrayList<JoinQunContainer>();
-						
 						
 						try {
-							User loginUser = BusinessOperationHandel.login(loginID, password, ClientListenerPort, offLineMsg, myFriends, myQuns, addFriendContainers, joinQunContainers);
-							if(loginUser != null) {
-								user = loginUser;
+							QinMessagePacket loginResultPacket = BusinessOperationHandel.login(loginID, password, ClientListenerPort);
+							
+							if(loginResultPacket == null) {
+								//heartBeatThread.stop();
+								loginUI.showNetWorkErrorMessage();
+								
+							} else if(loginResultPacket.getCommand().equals(Command.LOGINSUCCESS)) {
+								
+								user = loginResultPacket.getLoginContainer().getUser();
+								quns = loginResultPacket.getQunListContainer().getQunList();
+								ArrayList<User> myFriends = loginResultPacket.getUserListContainer().getUserList();
 								
 								for(int i = 0; i < myFriends.size(); i++) {
 									if(myFriends.get(i).isUserOnline())
@@ -190,8 +201,6 @@ public class QinUIController{
 									else
 										offlineFriends.add(myFriends.get(i));
 								}
-								
-								quns = myQuns;
 							
 								createMainUI(user);
 								mainUI.setOnlineFriend(onlineFriends);
@@ -200,6 +209,10 @@ public class QinUIController{
 							
 								loginUI.hideLoginUI();
 								mainUI.showMainUI();
+								
+								ArrayList<Message> offLineMsg = loginResultPacket.getMessageListContainer().getMessageList();
+								ArrayList<AddFriendContainer> addFriendContainers = loginResultPacket.getAddFriendListContainer().getAddFriendList();
+								ArrayList<JoinQunContainer> joinQunContainers = loginResultPacket.getJoinQunListContainer().getJoinQunList();
 								
 								for(int i = 0; i < offLineMsg.size(); i++) {
 									Thread receiveMessageThread = new Thread(new ReceiveMessageThread(offLineMsg.get(i), !offLineMsg.get(i).isQunMsg()));
@@ -238,13 +251,14 @@ public class QinUIController{
 								}
 								
 							} else {
-								loginUI.showErrorMessage();
-								heartBeatThread.stop();
+								//heartBeatThread.stop();
+								loginUI.showErrorMessage(loginResultPacket.getResponseMsg());
+								
 							}
 						} catch (ClassNotFoundException | IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							//heartBeatThread.stop();
 							loginUI.showNetWorkErrorMessage();
+							
 						}
 					}
     		});
@@ -277,6 +291,7 @@ public class QinUIController{
 				public void windowClosing(java.awt.event.WindowEvent e) {
 					try {
 						BusinessOperationHandel.logout(user.getUid());
+						//heartBeatThread.stop();
 					} catch (ClassNotFoundException | IOException e1) {
 						e1.printStackTrace();
 					}
@@ -449,6 +464,25 @@ public class QinUIController{
 					}	
 				}
 			});
+			
+			
+			searchUI.getAddButton().addMouseListener(new MouseAdapter() {
+		    		@Override
+		    		public void mouseExited(MouseEvent e) {
+		    			searchUI.getAddButton().setEnabled(true);
+		    		}
+		    		
+		    		public void mouseEntered(MouseEvent e) {
+		    			// TODO Auto-generated method stub
+		    			Object obj = searchUI.getAddObj();
+						
+						if(obj instanceof User && ((User)obj).getUid() == user.getUid()) {
+							 searchUI.getAddButton().setEnabled(false);
+						} else {
+		    	        	  searchUI.getAddButton().setEnabled(true);
+		    	          }
+		    		}
+		    	});
 		}
 		
 		return searchUI;
@@ -464,7 +498,7 @@ public class QinUIController{
 					Qun createQun = createQunUI.getQunToCreate();
 					int qunID = BusinessOperationHandel.createQun(user.getUid(), createQun.getQunName(), createQun.getQunDescription());
 					
-					if(qunID == Resource.CreateQunFailQunID) {
+					if(qunID != Resource.CreateQunFailQunID) {
 						createQun.setQunID(qunID);
 						
 						addQun(createQun);

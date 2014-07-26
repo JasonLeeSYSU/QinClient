@@ -40,7 +40,7 @@ public class Resource {
 	
 	public final static int MessageMaxCharacter = 170;
 	
-	public final static String ServerIP = "172.19.202.225";
+	public final static String ServerIP = "172.18.159.201";
 	 
 	public final static int ServerPort = 6687;
 	
@@ -52,5 +52,5 @@ public class Resource {
 	
 	public final static int CreateQunFailQunID = -1;
 	
-	public final static int DelayTime = 3000;
+	public final static int DelayTime = 5500;
 }

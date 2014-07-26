@@ -1,20 +1,19 @@
 package qin.controller;
 
-import qin.controller.handelThread.HeartBeatThread;
 
 public class QinController {
 	
 	
 	public void runClent() {
-		QinUIController.getInstance().RunLoginUI();
+		//.RunLoginUI();
 	}
 	
 	public static void main(String[] args) {
 		
-		Thread qinThreadController = new Thread(new QinThreadController());
-		qinThreadController.start();
+		Thread qinThreadControllerThread = new Thread(new QinThreadController());
+		qinThreadControllerThread.start();
 		
-		QinController qinController = new QinController();
-		qinController.runClent();
+		Thread  qinUIControllerThread = new Thread(QinUIController.getInstance());
+		qinUIControllerThread.start();
 	}
 }

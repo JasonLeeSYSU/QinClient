@@ -6,6 +6,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.InetAddress;
@@ -146,6 +148,23 @@ public class LoginUI { //implements ActionListener {
             loginButton.setFocusPainted(false);
             loginButton.setBounds(new Rectangle(width*2/15, height*23/30, width/3,height*2/18));
             
+            loginButton.addMouseListener(new MouseAdapter() {
+	    		@Override
+	    		public void mouseExited(MouseEvent e) {
+	    			loginButton.setEnabled(true);
+	    		}
+	    		
+	    		public void mouseEntered(MouseEvent e) {
+	    			// TODO Auto-generated method stub
+	    	          if(getIDField().getText().trim().length() > 0 && getPasswordField().getText().length() > 0) {
+	    	        	  loginButton.setEnabled(true);
+	    	          } else {
+	    	        	  loginButton.setEnabled(false);
+	    	          }
+	    		}
+	    	});
+            
+            
         }
         return loginButton;
     }
@@ -160,9 +179,9 @@ public class LoginUI { //implements ActionListener {
         return regeditButton;
     }
 
-    public void showErrorMessage() {
+    public void showErrorMessage(String msg) {
     	
-    	JOptionPane.showMessageDialog(null, "您输入的密码不正确，原因可能是:\n记错密码；未区分字母大小写；未开启小键盘。", "登录失败", JOptionPane.DEFAULT_OPTION);
+    	JOptionPane.showMessageDialog(null, msg, "登录失败", JOptionPane.DEFAULT_OPTION);
     }
     
   public void showNetWorkErrorMessage() {

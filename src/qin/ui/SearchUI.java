@@ -141,7 +141,7 @@ public class SearchUI {
 	        	inputField.addKeyListener(new KeyAdapter(){
 					public void keyTyped(KeyEvent e) {
 						int keyChar = e.getKeyChar();				
-						if(keyChar < KeyEvent.VK_0 || keyChar > KeyEvent.VK_9 || inputField.getText().length() >= 15) {
+						if(keyChar < KeyEvent.VK_0 || keyChar > KeyEvent.VK_9 || inputField.getText().length() >= 9) {
 							e.consume(); //关键，屏蔽掉非法输入
 						}
 						

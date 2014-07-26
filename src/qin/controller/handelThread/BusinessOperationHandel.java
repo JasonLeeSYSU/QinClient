@@ -8,6 +8,7 @@ import qin.controller.handelThread.basicOperation.MessagePacketSender;
 import qin.model.*;
 import qin.model.domainClass.*;
 import qin.model.msgContainer.*;
+import qin.testcase.StaticTestCase;
 
 public class BusinessOperationHandel {
 	
@@ -72,35 +73,24 @@ public class BusinessOperationHandel {
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
-	public static User login(int userID, String password, int listenPort,
-			ArrayList<Message> offLineMsg,
-			ArrayList<User> friends,
-			ArrayList<Qun> quns,
-			ArrayList<AddFriendContainer> addFriendContainers,
-			ArrayList<JoinQunContainer> joinQunContainers
-			) throws ClassNotFoundException, IOException {
-		User loginUser = null;
+	public static QinMessagePacket login(int userID, String password, int listenPort) 
+			throws ClassNotFoundException, IOException {
+		
+		QinMessagePacket loginResultPacket = null;
 		try {			
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.LOGIN);
-			
 			User user = new User();
 			user.setUid(userID);
 			user.setPassword(password);
-			user.setIPAddr(Inet4Address.getLocalHost().getHostAddress());
 			user.setPort(listenPort);
 			LoginContainer loginContainer = new LoginContainer(user);
 			
 			messagePacket.setLoginContainer(loginContainer);
-			QinMessagePacket loginResultPacket = MessagePacketSender.sendPacket(messagePacket);
 			
-			if( loginResultPacket.getCommand().equals(Command.LOGINSUCCESS)) {
-				loginUser = loginResultPacket.getLoginContainer().getUser();
-				offLineMsg = loginResultPacket.getMessageListContainer().getMessageList();
-				friends = loginResultPacket.getUserListContainer().getUserList();
-				quns = loginResultPacket.getQunListContainer().getQunList();
-				addFriendContainers = loginResultPacket.getAddFriendListContainer().getAddFriendList();
-				joinQunContainers = loginResultPacket.getJoinQunListContainer().getJoinQunList();
-			}
+			System.out.println("等待login结果包！");
+			loginResultPacket = MessagePacketSender.sendPacket(messagePacket);
+			System.out.println("返回login结果包！");
+			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -108,7 +98,8 @@ public class BusinessOperationHandel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return loginUser;
+		
+		return loginResultPacket;
 	}
 	
 	
