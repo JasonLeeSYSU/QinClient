@@ -156,6 +156,19 @@ public class BusinessOperationHandel {
 		MessageContainer messageContainer = new MessageContainer(message);
 		
 		messagePacket.setMessageContainer(messageContainer);
+
+		try {
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 
@@ -198,10 +211,14 @@ public class BusinessOperationHandel {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.ADDFRIEND);
 			AddFriendContainer addFriendContainer = new AddFriendContainer(sourceId, friendId);
 			messagePacket.setAddFriendContainer(addFriendContainer);
-			MessagePacketSender.sendPacket(messagePacket);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -213,10 +230,14 @@ public class BusinessOperationHandel {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.DELETEFRIEND);
 			DeleteFriendContainer deleteFriendContainer = new DeleteFriendContainer(sourceId, friendId);
 			messagePacket.setDeleteFriendContainer(deleteFriendContainer);
-			MessagePacketSender.sendPacket(messagePacket);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -303,10 +324,14 @@ public class BusinessOperationHandel {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.JOININQUN);
 			JoinQunContainer joinQunContainer = new JoinQunContainer(userId, qunId);
 			messagePacket.setJoinQunContainer(joinQunContainer);
-			MessagePacketSender.sendPacket(messagePacket);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -318,10 +343,14 @@ public class BusinessOperationHandel {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.EXITQUN);
 			ExitQunContainer exitQunContainer = new ExitQunContainer(userId, qunId);
 			messagePacket.setExitQunContainer(exitQunContainer);
-			MessagePacketSender.sendPacket(messagePacket);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -333,10 +362,14 @@ public class BusinessOperationHandel {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.MODIFYUSERINFO);
 			ModifyUserInfoContainer modifyUserInfoContainer = new ModifyUserInfoContainer(user);
 			messagePacket.setModifyUserInfoContainer(modifyUserInfoContainer);
-			MessagePacketSender.sendPacket(messagePacket);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -348,10 +381,14 @@ public class BusinessOperationHandel {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.MODIFYQUNINFO);
 			ModifyQunInfoContainer modifyQunInfoContainer = new ModifyQunInfoContainer(qun);
 			messagePacket.setModifyQunInfoContainer(modifyQunInfoContainer);
-			MessagePacketSender.sendPacket(messagePacket);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -367,10 +404,14 @@ public class BusinessOperationHandel {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.RESPONDADDFRIENDAPPLICATION);
 			RespondAddFriendApplicationContainer rafac = new RespondAddFriendApplicationContainer(sourceId, userId, ifAgree);
 			messagePacket.setRespondAddFriendApplicationContainer(rafac);
-			MessagePacketSender.sendPacket(messagePacket);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -386,10 +427,14 @@ public class BusinessOperationHandel {
 				QinMessagePacket messagePacket = new QinMessagePacket(Command.RESPONDJOINQUNAPPLICATION);
 				RespondJoinQunApplicationContainer rjqac = new RespondJoinQunApplicationContainer(sourceId, qunId, ifAgree);
 				messagePacket.setRespondJoinQunApplicationContainer(rjqac);
-				MessagePacketSender.sendPacket(messagePacket);;
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+				Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+					
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				out.writeObject(messagePacket);
+				out.flush();
+				
+				socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
