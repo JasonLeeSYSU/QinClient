@@ -114,7 +114,6 @@ public class QinThreadController implements Runnable {
 					// 收到文件接收请求
 					Thread receiveFileThread = new Thread(new ReceiveFileThread(socket, packet.getSendFileSegment()));
 					receiveFileThread.start();
-					
 				} 
 				
 			} catch(Exception e) {

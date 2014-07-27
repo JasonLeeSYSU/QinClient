@@ -56,7 +56,7 @@ public class QinUIController implements Runnable  {
 	private List<MessageUI> PrivateMessageUIs = new ArrayList<MessageUI>();
 	private List<MessageUI> QunMessageUIs = new ArrayList<MessageUI>();
 	
-	//HeartBeatThread heartBeatThread = null;
+	HeartBeatThread heartBeatThread = null;
 	
 	/***
 	 * 把构造函数声明为private
@@ -176,8 +176,8 @@ public class QinUIController implements Runnable  {
 				public void actionPerformed(ActionEvent e) {
 						System.out.println("登录");
 						
-						//heartBeatThread = new HeartBeatThread(user.getUid());
-						//heartBeatThread.start();
+						heartBeatThread = new HeartBeatThread(user.getUid());
+						heartBeatThread.start();
 						
 						int loginID = new Integer(loginUI.getIDField().getText());
 						String password = loginUI.getPasswordField().getText();
@@ -186,7 +186,7 @@ public class QinUIController implements Runnable  {
 							QinMessagePacket loginResultPacket = BusinessOperationHandel.login(loginID, password, ClientListenerPort);
 							
 							if(loginResultPacket == null) {
-								//heartBeatThread.stop();
+								heartBeatThread.stop();
 								loginUI.showNetWorkErrorMessage();
 								
 							} else if(loginResultPacket.getCommand().equals(Command.LOGINSUCCESS)) {
@@ -194,7 +194,6 @@ public class QinUIController implements Runnable  {
 								user = loginResultPacket.getLoginContainer().getUser();
 								quns = loginResultPacket.getQunListContainer().getQunList();
 								ArrayList<User> myFriends = loginResultPacket.getUserListContainer().getUserList();
-								
 								
 								for(int i = 0; i < myFriends.size(); i++) {
 									if(myFriends.get(i).isUserOnline())
@@ -252,12 +251,12 @@ public class QinUIController implements Runnable  {
 								}
 								
 							} else {
-								//heartBeatThread.stop();
+								heartBeatThread.stop();
 								loginUI.showErrorMessage(loginResultPacket.getResponseMsg());
 								
 							}
 						} catch (ClassNotFoundException | IOException e1) {
-							//heartBeatThread.stop();
+							heartBeatThread.stop();
 							loginUI.showNetWorkErrorMessage();
 							
 						}
@@ -502,6 +501,9 @@ public class QinUIController implements Runnable  {
 					
 					if(qunID != Resource.CreateQunFailQunID) {
 						createQun.setQunID(qunID);
+						List<User> qunUser = new ArrayList<User>();
+						qunUser.add(user);
+						createQun.setQunMember(qunUser);
 						
 						addQun(createQun);
 						createQunUI.showCreateQunID(createQun.getQunName(), qunID);

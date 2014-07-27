@@ -1,12 +1,6 @@
 package qin.controller;
 
-
 public class QinController {
-	
-	
-	public void runClent() {
-		//.RunLoginUI();
-	}
 	
 	public static void main(String[] args) {
 		
