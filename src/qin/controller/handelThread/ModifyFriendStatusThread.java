@@ -17,7 +17,7 @@ public class ModifyFriendStatusThread implements Runnable {
 	
 	public ModifyFriendStatusThread(int id, String IPAdrr, int Port) {
 		this.id = id;
-		this.isOnline = false;
+		this.isOnline = true;
 		this.IPAdrr = IPAdrr;
 		this.Port = Port;
 	}
@@ -27,7 +27,7 @@ public class ModifyFriendStatusThread implements Runnable {
 		if(isOnline) {
 			QinUIController.getInstance().friendOnline(id, IPAdrr, Port);
 		} else {
-			QinUIController.getInstance().friendOffline(id);;
+			QinUIController.getInstance().friendOffline(id);
 		}
 	}
 }
