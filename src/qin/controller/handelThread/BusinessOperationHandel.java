@@ -255,7 +255,7 @@ public class BusinessOperationHandel {
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
-	public static Qun findQun(int qunID) throws ClassNotFoundException, IOException {
+	public static Qun findQun(int qunID, boolean requestMemberInfo) throws ClassNotFoundException, IOException {
 		Qun qunResult = null;
 		try {			
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.FINDQUN);
@@ -263,6 +263,7 @@ public class BusinessOperationHandel {
 			Qun qun = new Qun();
 			qun.setQunID(qunID);
 			FindQunContainer findQunContainer = new FindQunContainer(qun);
+			findQunContainer.setRequestMemberInfo(requestMemberInfo);
 			
 			messagePacket.setFindQunContainer(findQunContainer);
 			QinMessagePacket findQunResultPacket = MessagePacketSender.sendPacket(messagePacket);

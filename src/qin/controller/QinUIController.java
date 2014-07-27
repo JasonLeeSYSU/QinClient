@@ -457,7 +457,7 @@ public class QinUIController implements Runnable  {
 							searchUI.getFindButton().setVisible(false);
 							searchUI.getAddButton().setVisible(true);
 							
-							Qun findQun = BusinessOperationHandel.findQun(((Qun)obj).getQunID());
+							Qun findQun = BusinessOperationHandel.findQun(((Qun)obj).getQunID(), false);
 							searchUI.showFindResult(findQun);
 						} catch (ClassNotFoundException | IOException e1) {
 							searchUI.showFindResult(null);;
@@ -676,10 +676,12 @@ public class QinUIController implements Runnable  {
 	public void showAddFriendApplicationResponse(int addedId, boolean isSuccess) {
 		try {
 			User addedUser = BusinessOperationHandel.findUser(addedId);
+			
 			if(addedUser != null) {
 				System.out.println("showAddFriendApplicationResponse addedUser");
-				if(isSuccess)
-					addFriend(addedUser);
+				
+				if(addedUser != null)
+					addFriend(addedUser); 
 				
 				ShowApplicationResponseUI showApplicationResponseUI = new ShowApplicationResponseUI(addedUser, user.getUid(), isSuccess);
 				showApplicationResponseUI.getJFrame();
@@ -701,11 +703,17 @@ public class QinUIController implements Runnable  {
 	public void showJoinQunApplicationResponse(int addedQunID, boolean isSuccess) {
 		try {
 			
-			Qun addedQun = BusinessOperationHandel.findQun(addedQunID);
+			Qun addedQun = null;
+				
+			if(isSuccess)		
+				addedQun = BusinessOperationHandel.findQun(addedQunID, true);
+			else 
+				addedQun = BusinessOperationHandel.findQun(addedQunID, false);
 			
 			if(addedQun != null) {
 				if(isSuccess)
 					addQun(addedQun);
+				
 				ShowApplicationResponseUI showApplicationResponseUI = new ShowApplicationResponseUI(addedQun, user.getUid(), isSuccess);
 				showApplicationResponseUI.getJFrame();
 			} else {
@@ -721,12 +729,18 @@ public class QinUIController implements Runnable  {
 	
 	public void friendOnline(int ID, String IP, int Port) {
 		User friend = getFriendInfoByID(ID);
+		System.out.println("用户登录了---" + ID);
 		if(friend != null && !friend.isUserOnline()) {
 			offlineFriends.remove(friend);
 			onlineFriends.add(friend);
 			friend.online();
 			friend.setIPAddr(IP);
 			friend.setPort(Port);
+			System.out.println("用户登录了---");
+			if(getPrivateMessageUIByID(ID) != null) {
+				System.out.println("用户登录了--- 改界面");
+				getPrivateMessageUIByID(ID).UserLoginUI();
+			}
 			
 			mainUI.friendOnlining(ID);
 		}
@@ -738,6 +752,8 @@ public class QinUIController implements Runnable  {
 			onlineFriends.remove(friend);
 			offlineFriends.add(friend);
 			friend.offline();
+			if(getPrivateMessageUIByID(ID) != null)
+				getPrivateMessageUIByID(ID).UserLogoutUI();
 			
 			mainUI.friendOfflining(ID);
 		}

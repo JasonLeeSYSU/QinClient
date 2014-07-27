@@ -41,9 +41,6 @@ import qin.model.domainClass.Qun;
 import qin.model.domainClass.Message;
 import qin.model.domainClass.User;
 
-
-
-
 public class MessageUI {
 	
 	private int MessageUIWidth = Resource.MessageUIWidth;
@@ -57,6 +54,7 @@ public class MessageUI {
 	private JFrame jFrame = null;
 	private JTextArea inputTextArea = null;
 	private JTextArea showMessageTextArea = null;
+	private JLabel ImageLabel = null;
 	
 	private JButton sendButton = null;
 	private JButton giveUpButton = null;
@@ -142,7 +140,9 @@ public class MessageUI {
         jPanel.setLayout(null);
         jPanel.setEnabled(true);
         
-        jPanel.add(getHeadImageLabel());
+        String ImagePath = isUserMessage ? ((user.isUserOnline() ? Resource.OnLineHeadImagePath : Resource.OffLineHeadImagePath) + user.getHeadImage()) : Resource.QunLogo;
+        jPanel.add(setAndGetHeadImageLabel(ImagePath ));
+        
         jPanel.add(getNameLabel());
         jPanel.add(getIDLabel());
         
@@ -164,27 +164,30 @@ public class MessageUI {
     }
 	
     
-    private JLabel getHeadImageLabel() {
-        String ImagePath = isUserMessage ? ((user.isUserOnline() ? Resource.OnLineHeadImagePath : Resource.OffLineHeadImagePath) + user.getHeadImage()) : Resource.QunLogo;
+    private JLabel setAndGetHeadImageLabel(String ImagePath) {
+    	if(ImageLabel == null) {
+    		ImageLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
+    		ImageLabel.setBounds(new Rectangle(20, 10, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
     	
-      	System.out.println(ImagePath);
-    	JLabel ImageLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
-    	ImageLabel.setBounds(new Rectangle(20, 10, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
-    	
-  		ImageLabel.addMouseListener(new MouseAdapter() {
-    		@Override
-    		public void mouseClicked(MouseEvent e) {
-    			if (e.getClickCount() == 2) {
-    				if(isUserMessage) {	
-    					ShowUserInfoUI showUserInfoUI = new ShowUserInfoUI(user);
-    					showUserInfoUI.showShowUserInfoUI();
-    				} else {
-    					ShowQunInfoUI showQunInfoUI = new ShowQunInfoUI(group);
-    					showQunInfoUI.showQunInfoUI();
+    		ImageLabel.addMouseListener(new MouseAdapter() {
+    			@Override
+    			public void mouseClicked(MouseEvent e) {
+    				if (e.getClickCount() == 2) {
+    					if(isUserMessage) {	
+    						ShowUserInfoUI showUserInfoUI = new ShowUserInfoUI(user);
+    						showUserInfoUI.showShowUserInfoUI();
+    					} else {
+    						ShowQunInfoUI showQunInfoUI = new ShowQunInfoUI(group);
+    						showQunInfoUI.showQunInfoUI();
+    					}
     				}
     			}
-    		}
-    	});
+    		});
+    	} else {
+    		ImageLabel.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
+    	}
+    	
+    	
     	
     	return ImageLabel;
     }
@@ -533,6 +536,23 @@ public class MessageUI {
     	String msg = "\t接收文件:  已接收完文件 \n\n";
     	getShowMessageTextArea().setText(getShowMessageTextArea().getText() + msg);
     }
+    
+    public void UserLogoutUI() {
+    	if(isUserMessage) {
+    		getSendFileLabel().setVisible(false);
+    		String ImagePath = Resource.OffLineHeadImagePath + user.getHeadImage();
+    		setAndGetHeadImageLabel(ImagePath);
+    	}
+    }
+    
+    public void UserLoginUI() {
+    	if(isUserMessage) {
+    		getSendFileLabel().setVisible(true);
+    		String ImagePath = Resource.OnLineHeadImagePath + user.getHeadImage();
+    		setAndGetHeadImageLabel(ImagePath);
+    	}	
+    }
+    
     
     /*** 
      * 更给UI
