@@ -402,8 +402,13 @@ public class BusinessOperationHandel {
 	public static void respondAddFriendApplication(int sourceId, int userId, boolean ifAgree) {
 		try {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.RESPONDADDFRIENDAPPLICATION);
-			RespondAddFriendApplicationContainer rafac = new RespondAddFriendApplicationContainer(sourceId, userId, ifAgree);
-			messagePacket.setRespondAddFriendApplicationContainer(rafac);
+			AddFriendContainer afc = new AddFriendContainer(sourceId, userId);
+			if (ifAgree) {
+				afc.setState(AddFriendContainer.PASSED);
+			} else {
+				afc.setState(AddFriendContainer.REJECT);
+			}
+			messagePacket.setAddFriendContainer(afc);
 
 			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
 				
@@ -424,17 +429,22 @@ public class BusinessOperationHandel {
 //	         the true value represents 'agree' and the false value represents 'disagree' 
 	public static void respondJoinQunApplication(int sourceId, int qunId, boolean ifAgree) {
 		try {
-				QinMessagePacket messagePacket = new QinMessagePacket(Command.RESPONDJOINQUNAPPLICATION);
-				RespondJoinQunApplicationContainer rjqac = new RespondJoinQunApplicationContainer(sourceId, qunId, ifAgree);
-				messagePacket.setRespondJoinQunApplicationContainer(rjqac);
+			QinMessagePacket messagePacket = new QinMessagePacket(Command.RESPONDJOINQUNAPPLICATION);
+			JoinQunContainer jqc = new JoinQunContainer(sourceId, qunId);
+			if (ifAgree) {
+				jqc.setState(JoinQunContainer.PASSED);
+			} else {
+				jqc.setState(JoinQunContainer.REJECT);
+			}
+			messagePacket.setJoinQunContainer(jqc);
 
-				Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
-					
-				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-				out.writeObject(messagePacket);
-				out.flush();
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
 				
-				socket.close();
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

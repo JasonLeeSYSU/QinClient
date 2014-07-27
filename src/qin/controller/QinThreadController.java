@@ -12,6 +12,8 @@ import qin.controller.handelThread.ReceiveFileThread;
 import qin.controller.handelThread.ReceiveMessageThread;
 import qin.model.Command;
 import qin.model.QinMessagePacket;
+import qin.model.msgContainer.AddFriendContainer;
+import qin.model.msgContainer.JoinQunContainer;
 
 public class QinThreadController implements Runnable {
 	private ServerSocket clientListenerSocket;
@@ -76,8 +78,13 @@ public class QinThreadController implements Runnable {
 					 
 				} else if(packet.getCommand().equals(Command.GAINADDFRIENDRESPOND)) {
 					 // 接收到添加好友结果
-					 int addedUserID = packet.getRespondAddFriendApplicationContainer().getFriendId();
-					 boolean isAdded = packet.getRespondAddFriendApplicationContainer().getIfAgree();
+					 int addedUserID = packet.getAddFriendContainer().getFriendId();
+					 boolean isAdded;
+					 if (packet.getAddFriendContainer().getState() == AddFriendContainer.PASSED) {
+						 isAdded = true;
+					 } else {
+						 isAdded = false;
+					 }
 					 
 					 Thread receiveAddFriendResponseThread = new Thread(new ReceiveApplicationResponseThread(true,addedUserID, isAdded));
 					 receiveAddFriendResponseThread.start();
@@ -92,8 +99,13 @@ public class QinThreadController implements Runnable {
 					 
 				} else if(packet.getCommand().equals(Command.GAINQUNRESPOND)) {
 					// 接收到加入群结果
-					 int addedQunID = packet.getRespondJoinQunApplicationContainer().getQunId();
-					 boolean isAdded = packet.getRespondJoinQunApplicationContainer().getIfAgree();
+					 int addedQunID = packet.getJoinQunContainer().getQunId();
+					 boolean isAdded;
+					 if (packet.getJoinQunContainer().getState() == JoinQunContainer.PASSED) {
+						 isAdded = true;
+					 } else {
+						 isAdded = false;
+					 }
 					 
 					Thread receiveJoinQunResponseThread = new Thread(new ReceiveApplicationResponseThread(false, addedQunID, isAdded));
 					receiveJoinQunResponseThread.start();
