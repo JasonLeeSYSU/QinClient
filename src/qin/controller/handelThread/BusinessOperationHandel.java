@@ -2,6 +2,8 @@ package qin.controller.handelThread;
 
 import java.io.*;
 import java.net.Inet4Address;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import qin.controller.handelThread.basicOperation.MessagePacketSender;
@@ -117,10 +119,14 @@ public class BusinessOperationHandel {
 			LogoutContainer logoutContainer = new LogoutContainer(userID);
 			
 			messagePacket.setLogoutContainer(logoutContainer);
-			MessagePacketSender.sendPacket(messagePacket);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+				
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			out.writeObject(messagePacket);
+			out.flush();
+			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
