@@ -651,11 +651,14 @@ public class QinUIController implements Runnable  {
 		try {
 			User addedUser = BusinessOperationHandel.findUser(addedId);
 			if(addedUser != null) {
+				System.out.println("showAddFriendApplicationResponse addedUser");
 				if(isSuccess)
 					addFriend(addedUser);
 				
 				ShowApplicationResponseUI showApplicationResponseUI = new ShowApplicationResponseUI(addedUser, user.getUid(), isSuccess);
 				showApplicationResponseUI.getJFrame();
+			} else {
+				System.out.println("showAddFriendApplicationResponse addedUser 不存在");
 			}
 			
 		} catch (ClassNotFoundException | IOException e) {
@@ -671,6 +674,7 @@ public class QinUIController implements Runnable  {
 	 */
 	public void showJoinQunApplicationResponse(int addedQunID, boolean isSuccess) {
 		try {
+			
 			Qun addedQun = BusinessOperationHandel.findQun(addedQunID);
 			
 			if(addedQun != null) {
@@ -678,6 +682,8 @@ public class QinUIController implements Runnable  {
 					addQun(addedQun);
 				ShowApplicationResponseUI showApplicationResponseUI = new ShowApplicationResponseUI(addedQun, user.getUid(), isSuccess);
 				showApplicationResponseUI.getJFrame();
+			} else {
+				System.out.println("showJoinQunApplicationResponse addedQun 不存在");
 			}
 	
 			

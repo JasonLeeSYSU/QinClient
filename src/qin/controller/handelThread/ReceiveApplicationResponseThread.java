@@ -10,13 +10,13 @@ public class ReceiveApplicationResponseThread implements Runnable {
 	private boolean isAddFriend;
 	
 	public ReceiveApplicationResponseThread(boolean isAddFriend, int ID, boolean isSuccess) {
-		this.isAddFriend = true;
+		this.isAddFriend = isAddFriend;
 		this.isSuccess = isSuccess;
 		
 		if(this.isAddFriend)
 			this.sourceID = ID;
 		else
-			this.sourceID = ID;
+			this.qunID = ID;
 	}
 	
 
