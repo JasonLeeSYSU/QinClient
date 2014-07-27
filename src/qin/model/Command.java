@@ -57,11 +57,11 @@ public class Command {
     // 服务端 --> 客户端(请求方)	等待被请求方处理添加请求
     public final static String WAITFORUSERRESPOND = "waitForUserRespond";
     // 服务端 --> 客户端(请求方)	获得被请求方处理结果
-    public final static String GAINADDFRIENDRESPOND = "gainMakeFriendRespond";
+    public final static String GAINADDFRIENDRESPOND = "gainAddFriendRespond";
     // 服务端 --> 客户端(被请求方)	收到添加好友请求
-    public final static String RECEIVEADDFRIENDAPPLICATION = "receiveMakeFriendApplication";
+    public final static String RECEIVEADDFRIENDAPPLICATION = "receiveAddFriendApplication";
     // 服务端(被请求方) --> 服务端	处理添加好友请求
-    public final static String RESPONDADDFRIENDAPPLICATION = "respondMakeFriendApplication";
+    public final static String RESPONDADDFRIENDAPPLICATION = "respondAddFriendApplication";
  
     
 	/***
