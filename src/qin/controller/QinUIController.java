@@ -120,7 +120,7 @@ public class QinUIController implements Runnable  {
    	 				System.out.println("Register ...................");
    				
    	 				String nickname = user.getNickName();
-   	 				String password = user.getPassword();
+   	 				String password = getMD5(user.getPassword());
    	 				String email = user.getEmail();
    	 				int age = user.getAge();
    	 				String gender = user.getGender();
@@ -170,7 +170,7 @@ public class QinUIController implements Runnable  {
 						System.out.println("登录");
 						
 						int loginID = new Integer(loginUI.getIDField().getText());
-						String password = loginUI.getPasswordField().getText();
+						String password = getMD5(loginUI.getPasswordField().getText());
 						
 						heartBeatThread = new HeartBeatThread(loginID);
 						heartBeatThread.start();
@@ -782,5 +782,29 @@ public class QinUIController implements Runnable  {
 
 	public void setClientListenerPort(int port) {
 		ClientListenerPort = port;
+	}
+	
+	public String getMD5(String password) {
+		  String s = null;
+		  char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',  'e', 'f'};
+		  
+		  try {
+			  java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+			  md.update(password.getBytes());
+		    
+			  byte tmp[] = md.digest();                                                  
+			  char str[] = new char[16 * 2]; 
+		    
+			  int k = 0;                              
+			  for(int i = 0; i < 16; i++) {       
+				  byte byte0 = tmp[i];             
+				  str[k++] = hexDigits[byte0 >>> 4 & 0xf];  
+				  str[k++] = hexDigits[byte0 & 0xf];            
+			  }
+			  s = new String(str);                              
+		   	}  catch( Exception e ) {
+			   e.printStackTrace();
+		   }
+		   return s;
 	}
 }
