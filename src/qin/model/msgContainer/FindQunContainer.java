@@ -7,9 +7,11 @@ public class FindQunContainer implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Qun qun = null;
+	private boolean requestMemberInfo;
 	
 	public FindQunContainer(){
 		qun = null;
+		requestMemberInfo = false;
 	}
 	
 	public FindQunContainer(Qun q){
@@ -22,5 +24,13 @@ public class FindQunContainer implements Serializable {
 	
 	public void setQun(Qun q){
 		qun = q;
+	}
+	
+	public boolean getRequestMemberInfo() {
+		return requestMemberInfo;
+	}
+	
+	public void setRequestMemberInfo(boolean _requestMemberInfo) {
+		requestMemberInfo = _requestMemberInfo;
 	}
 }
