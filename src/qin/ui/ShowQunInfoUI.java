@@ -90,10 +90,16 @@ public class ShowQunInfoUI {
 			jContentPane.add(getIDLabel());
 			
 			jContentPane.add(getQunOwnerLabel());
-			jContentPane.add(getQunMemberNumberButton());
-			jContentPane.add(getDescriptionButton());
 			
-			jContentPane.add(getTableScrollPane());
+			
+			if(qun.getQunMember() != null) {
+				jContentPane.add(getQunMemberNumberButton());
+				jContentPane.add(getDescriptionButton());
+				jContentPane.add(getTableScrollPane());
+			} else {
+				jContentPane.add(getDescriptionLabel());
+			}
+			
 			jContentPane.add(getDescriptionTextArea());
 		
 
@@ -172,6 +178,15 @@ public class ShowQunInfoUI {
 		return descriptionTipButton;
 	}
 
+	private JLabel getDescriptionLabel() {
+		
+		JLabel descriptionTipLabel = new JLabel("群简介:");
+		
+		descriptionTipLabel.setBounds(new Rectangle(width/15, height*5/15+3, width*1/3, height*1/9));
+		
+		return descriptionTipLabel;
+	}
+	
 	private JTextArea getDescriptionTextArea() {
 		JTextArea descriptionArea =  new JTextArea(qun.getQunDescription());
 		descriptionArea.setFocusCycleRoot(true);

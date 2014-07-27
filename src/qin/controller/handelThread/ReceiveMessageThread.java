@@ -46,7 +46,7 @@ public class ReceiveMessageThread implements Runnable{
 		
 		if(messageUI != null) {
 			msg += message.getDateTime() + "\n" + message.getDetail();
-			msg += "\n";
+			msg += "\n\n";
 			messageUI.getShowMessageTextArea().setText(messageUI.getShowMessageTextArea().getText() + msg);
 			messageUI.showMessageUI();
 		}

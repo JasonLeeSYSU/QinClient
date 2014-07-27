@@ -28,9 +28,6 @@ import qin.model.domainClass.Qun;
 import qin.model.domainClass.User;
 import qin.testcase.StaticTestCase;
 
-
-
-
 public class SearchUI {
 
 		private int SearchUIWidth = Resource.SearchUIWidth;
@@ -127,7 +124,6 @@ public class SearchUI {
 		      jPanel.add(getFindButton());
 		      jPanel.add(getAddButton());
 		        
-		        
 		      return jPanel;
 	    }
 	    
@@ -145,12 +141,12 @@ public class SearchUI {
 							e.consume(); //关键，屏蔽掉非法输入
 						}
 						
-						//if(keyChar == '\b') {
-							//System.out.println("退格");
+						if(keyChar == '\b') {
 							getFindButton().setVisible(true);
 							getAddButton().setVisible(false);
 							getShowInfoPanel().setVisible(false);
-						//}
+							getNoFoundLabel().setVisible(false);
+						}
 					}
 				});
 	        	
@@ -195,7 +191,11 @@ public class SearchUI {
 						getAddButton().setVisible(false);
 						getTipLabel().setText("通过账号查找用户");
 						
+						getNoFoundLabel().setVisible(false);
+						getNoFoundLabel().setText("您查找的用户不存在");
+						
 						getShowInfoPanel().setVisible(false);
+						
 					}
 				});
 	    	}
@@ -219,6 +219,9 @@ public class SearchUI {
 						getAddButton().setText("加入该群");
 						getAddButton().setVisible(false);
 						getTipLabel().setText("通过账号查找群");
+						
+						getNoFoundLabel().setVisible(false);
+						getNoFoundLabel().setText("您查找的群不存在");
 						
 						getShowInfoPanel().setVisible(false);
 					}
@@ -332,8 +335,7 @@ public class SearchUI {
 	    
 	    private JLabel getNoFoundLabel() {
 	    	if(noFoundLabel == null) {
-	    		String msg = isUser ? "您查询的用户不存在" : "您查询的群不存在";
-	    		noFoundLabel = new JLabel(msg);
+	    		noFoundLabel = new JLabel("您查找的用户不存在");
 	    		noFoundLabel.setBounds(new Rectangle(SearchUIWidth*1/3+10, SearchUIHeight*5/10, SearchUIWidth/2, SearchUIHeight*1/10));
 	    		noFoundLabel.setForeground(Color.RED);
 	    		noFoundLabel.setVisible(false);

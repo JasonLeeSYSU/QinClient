@@ -324,20 +324,18 @@ public class MessageUI {
          			
          			// 按 Enter 发送消息
          			if(keyChar == '\n') {
-         				System.out.println(inputTextArea.getText().length());
-         				
+         				String msg =  inputTextArea.getText();
+     					msg = msg.substring(0, msg.length()-1);
+     					
          				if(inputTextArea.getText().trim().length() > 0 && !inputTextArea.getText().trim().equals("\n")) {
          					
+         					inputTextArea.setText("");
          					String time = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(new Date());
-         					String msg =  inputTextArea.getText();
-         					inputTextArea.setText("");	
-         					showMessageTextArea.setText(showMessageTextArea.getText() + "\n我  " + time  + "\n" + msg);
+         					showMessageTextArea.setText(showMessageTextArea.getText() + "我  " + time  + "\n" + msg + "\n\n");
 
-         					
          					int destinationId = getObjectID();
-         					String detail = msg;
          					boolean isQunMsg = !isUserMessage;
-         					BusinessOperationHandel.sendMessage(sourceID, destinationId, detail, isQunMsg);
+         					BusinessOperationHandel.sendMessage(sourceID, destinationId, msg, isQunMsg);
          					
          				} else {
          					inputTextArea.setText("");	
@@ -380,7 +378,7 @@ public class MessageUI {
     					
     					if(msg.trim().length() > 0) {
     						String time = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(new Date());
-    						getShowMessageTextArea().setText(getShowMessageTextArea().getText() + "\n我  " + time  + "\n" + msg);
+    						getShowMessageTextArea().setText(getShowMessageTextArea().getText() + "我  " + time  + "\n" + msg + "\n\n");
     						getInputTextArea().setText("");	
     					
            					

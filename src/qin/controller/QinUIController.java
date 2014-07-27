@@ -678,7 +678,6 @@ public class QinUIController implements Runnable  {
 					addQun(addedQun);
 				ShowApplicationResponseUI showApplicationResponseUI = new ShowApplicationResponseUI(addedQun, user.getUid(), isSuccess);
 				showApplicationResponseUI.getJFrame();
-				
 			}
 	
 			
