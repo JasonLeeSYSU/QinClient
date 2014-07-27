@@ -283,7 +283,7 @@ public class MessageUI {
     
     private JScrollPane getShowMessageTextAreaScrollPane() {
         JScrollPane  jScrollPane = new JScrollPane();
-        jScrollPane.setBounds(0, Resource.MessageUIHeight*1/8 , Resource.MessageUIWidth, Resource.MessageUIHeight*8/15 + 12);
+        jScrollPane.setBounds(0, Resource.MessageUIHeight*1/8 , Resource.MessageUIWidth-7, Resource.MessageUIHeight*8/15 + 12);
         jScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         jScrollPane.getViewport().add(getShowMessageTextArea());
         

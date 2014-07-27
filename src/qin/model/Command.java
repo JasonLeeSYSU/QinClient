@@ -125,7 +125,7 @@ public class Command {
     public final static String RECEIVEPRIVATEMSG = "receivePrivateMsg";
     // 客户端(发送方) --> 服务端	发送群聊信息
     public final static String SENDQUNMSG = "sendQunMsg";
-    // 服务端 --> 客户端(接收方) 	接群私聊信息
+    // 服务端 --> 客户端(接收方) 	接群群聊信息
     public final static String RECEIVEQUNMSG = "receiveQunMsg";
     
     

@@ -52,5 +52,5 @@ public class Resource {
 	
 	public final static int CreateQunFailQunID = -1;
 	
-	public final static int DelayTime = 5500;
+	public final static int DelayTime = 25000;
 }

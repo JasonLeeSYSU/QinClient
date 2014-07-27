@@ -77,13 +77,6 @@ public class QinUIController implements Runnable  {
 	       
 	       return SingleUIController;  
 	}  
-
-	/***
-	 * 运行（显示）登录界面
-	 */
-	public void RunLoginUI() {
-		getLoginUI().showLoginUI();
-	}
 	
 	@Override
 	public void run() {
@@ -214,11 +207,6 @@ public class QinUIController implements Runnable  {
 								ArrayList<AddFriendContainer> addFriendContainers = loginResultPacket.getAddFriendListContainer().getAddFriendList();
 								ArrayList<JoinQunContainer> joinQunContainers = loginResultPacket.getJoinQunListContainer().getJoinQunList();
 								
-								for(int i = 0; i < offLineMsg.size(); i++) {
-									Thread receiveMessageThread = new Thread(new ReceiveMessageThread(offLineMsg.get(i), !offLineMsg.get(i).isQunMsg()));
-									receiveMessageThread.start();
-								}
-								
 								for(int i = 0; i < addFriendContainers.size(); i++) {
 									if(addFriendContainers.get(i).getState() == AddFriendContainer.CHECKED) {
 										 int sourceID = addFriendContainers.get(i).getSourceId();
@@ -247,6 +235,42 @@ public class QinUIController implements Runnable  {
 										 
 										Thread receiveJoinQunResponseThread = new Thread(new ReceiveApplicationResponseThread(false, addedQunID, isAdded));
 										receiveJoinQunResponseThread.start();
+									}
+								}
+								
+								for(int i = 0; i < offLineMsg.size(); i++) {
+									MessageUI messageUI = null;
+									Message message =  offLineMsg.get(i);
+									String msg = "";
+									
+									if(!message.isQunMsg()) {
+										messageUI = getPrivateMessageUIByID(message.getSourceId());
+										if(messageUI == null)
+											return ;
+										msg = ((User)(messageUI.getObject())).getNickName() + " ";
+									} else {
+										messageUI = getQunMessageUIByID(message.getSourceId());
+										if(messageUI == null)
+											return ;
+										
+										List<User> qunUser = ((Qun)(messageUI.getObject())).getQunMember();
+										String username = "匿名者 ";
+										for(int j = 0; j < qunUser.size(); j++) {
+											if(qunUser.get(j).getUid() == message.getSourceId()) {
+												username = qunUser.get(i).getNickName() + "<" + message.getSourceId() + "> ";
+												break;
+											}
+										}
+										msg = username;
+									}
+									
+									if(messageUI != null) {
+										msg += message.getDateTime() + "\n" + message.getDetail();
+										msg += "\n\n";
+										messageUI.getShowMessageTextArea().setText(messageUI.getShowMessageTextArea().getText() + msg);
+										messageUI.getShowMessageTextArea().setCaretPosition(messageUI.getShowMessageTextArea().getText().length());
+										
+										messageUI.showMessageUI();
 									}
 								}
 								

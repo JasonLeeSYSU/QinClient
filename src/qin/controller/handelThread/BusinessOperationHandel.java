@@ -152,6 +152,7 @@ public class BusinessOperationHandel {
 		message.setSourceId(sourceId);
 		message.setDestinationId(destinationId);
 		message.setDetail(detail);
+		message.setIsQunMsg(isQunMsg);
 		
 		MessageContainer messageContainer = new MessageContainer(message);
 		
