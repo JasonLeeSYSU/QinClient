@@ -163,6 +163,8 @@ public class FriendTree {
    * @param id
    */
     private void addNodeToOnlineTree(User user) {
+    	user.online();
+    	
         treeMode = (DefaultTreeModel) tree.getModel();
         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(user);
         treeMode.insertNodeInto(newNode, onlineSubTree, onlineSubTree.getChildCount());
@@ -202,6 +204,7 @@ public class FriendTree {
      * @param id
      */
     private void addNodeToOfflineTree(User user) {
+    	user.offline();
         treeMode = (DefaultTreeModel) tree.getModel();
         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(user); 
         treeMode.insertNodeInto(newNode, offlineSubTree, offlineSubTree.getChildCount());

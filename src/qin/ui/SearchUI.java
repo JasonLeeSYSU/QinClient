@@ -332,7 +332,8 @@ public class SearchUI {
 	    
 	    private JLabel getNoFoundLabel() {
 	    	if(noFoundLabel == null) {
-	    		noFoundLabel = new JLabel("您查询的用户不存在");
+	    		String msg = isUser ? "您查询的用户不存在" : "您查询的群不存在";
+	    		noFoundLabel = new JLabel(msg);
 	    		noFoundLabel.setBounds(new Rectangle(SearchUIWidth*1/3+10, SearchUIHeight*5/10, SearchUIWidth/2, SearchUIHeight*1/10));
 	    		noFoundLabel.setForeground(Color.RED);
 	    		noFoundLabel.setVisible(false);

@@ -331,7 +331,7 @@ public class MessageUI {
          					String time = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(new Date());
          					String msg =  inputTextArea.getText();
          					inputTextArea.setText("");	
-         					showMessageTextArea.setText(showMessageTextArea.getText() + "我  " + time  + "\n" + msg  + "\n\n");
+         					showMessageTextArea.setText(showMessageTextArea.getText() + "\n我  " + time  + "\n" + msg);
 
          					
          					int destinationId = getObjectID();
@@ -380,7 +380,7 @@ public class MessageUI {
     					
     					if(msg.trim().length() > 0) {
     						String time = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(new Date());
-    						getShowMessageTextArea().setText(getShowMessageTextArea().getText() + "我  " + time  + "\n" + msg  + "\n\n");
+    						getShowMessageTextArea().setText(getShowMessageTextArea().getText() + "\n我  " + time  + "\n" + msg);
     						getInputTextArea().setText("");	
     					
            					

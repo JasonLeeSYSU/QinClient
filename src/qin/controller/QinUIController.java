@@ -176,11 +176,11 @@ public class QinUIController implements Runnable  {
 				public void actionPerformed(ActionEvent e) {
 						System.out.println("登录");
 						
-						heartBeatThread = new HeartBeatThread(user.getUid());
-						heartBeatThread.start();
-						
 						int loginID = new Integer(loginUI.getIDField().getText());
 						String password = loginUI.getPasswordField().getText();
+						
+						heartBeatThread = new HeartBeatThread(loginID);
+						heartBeatThread.start();
 						
 						try {
 							QinMessagePacket loginResultPacket = BusinessOperationHandel.login(loginID, password, ClientListenerPort);
@@ -691,24 +691,24 @@ public class QinUIController implements Runnable  {
 	public void friendOnline(int ID, String IP, int Port) {
 		User friend = getFriendInfoByID(ID);
 		if(friend != null && !friend.isUserOnline()) {
-			mainUI.friendOnlining(ID);
-			
 			offlineFriends.remove(friend);
 			onlineFriends.add(friend);
 			friend.online();
 			friend.setIPAddr(IP);
 			friend.setPort(Port);
+			
+			mainUI.friendOnlining(ID);
 		}
 	} 
 	
 	public void friendOffline(int ID) {
 		User friend = getFriendInfoByID(ID);
 		if(friend != null && friend.isUserOnline()) {
-			mainUI.friendOfflining(ID);
-			
 			onlineFriends.remove(friend);
 			offlineFriends.add(friend);
 			friend.offline();
+			
+			mainUI.friendOfflining(ID);
 		}
 	}
 	
