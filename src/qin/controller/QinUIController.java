@@ -680,7 +680,7 @@ public class QinUIController implements Runnable  {
 			if(addedUser != null) {
 				System.out.println("showAddFriendApplicationResponse addedUser");
 				
-				if(addedUser != null)
+				if(isSuccess)
 					addFriend(addedUser); 
 				
 				ShowApplicationResponseUI showApplicationResponseUI = new ShowApplicationResponseUI(addedUser, user.getUid(), isSuccess);
