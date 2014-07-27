@@ -13,8 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,12 +24,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.text.PlainDocument;
 
 import qin.model.Resource;
 import qin.model.domainClass.Address;
@@ -318,6 +312,13 @@ public class RegisterUI implements MouseListener{
 			emailTextField.setBounds(new Rectangle(width*3/10, height*4/15, width/2,  height/15));
 			
 			emailTextField.addMouseListener(this);
+			
+			// 限制只能输入2个数字
+			emailTextField.addKeyListener(new KeyAdapter(){
+				public void keyTyped(KeyEvent e) {
+					isEmailCorrect();
+				}
+			});
 		}
 		
 		return emailTextField;
@@ -529,6 +530,7 @@ public class RegisterUI implements MouseListener{
 			registerButton.setText("注册");
 			
 			registerButton.setEnabled(false);
+			registerButton.addMouseListener(this);
 		}
 		
 		return registerButton;
@@ -556,14 +558,15 @@ public class RegisterUI implements MouseListener{
 			getRegisterButton().setEnabled(true);
 		else 
 			getRegisterButton().setEnabled(false);
-		
-		System.out.println(" clicked");
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		if(isMessageTrue())
+			getRegisterButton().setEnabled(true);
+		else 
+			getRegisterButton().setEnabled(false);
 	}
 
 	@Override
@@ -575,35 +578,32 @@ public class RegisterUI implements MouseListener{
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		if(isMessageTrue())
+			getRegisterButton().setEnabled(true);
+		else 
+			getRegisterButton().setEnabled(false);
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getSource() == getNicknameTextField()) {
-			System.out.println("user name: " + getNicknameTextField().getText());
-		}
-		
 		if(isMessageTrue())
 			getRegisterButton().setEnabled(true);
 		else 
 			getRegisterButton().setEnabled(false);
-		
-		System.out.println(" exited ");
 	}
 	
 	private boolean isMessageTrue() {
 		if( isNicknameCorrect() && isPasswordCorrent() && isValidationPasswordCorrect() && isEmailCorrect()) {	
 			return true;
 		}
-			
 		return false;
 	}
 	
 	private boolean isNicknameCorrect() {
 		if(nicknameTextField.getText().trim().equals("")) {
 			nicknameTip.setVisible(true);
+			getRegisterButton().setEnabled(false);
 			return false;
 		} else {
 			nicknameTip.setVisible(false);
@@ -614,6 +614,7 @@ public class RegisterUI implements MouseListener{
 	private boolean isPasswordCorrent() {
 		if(passwordField.getText().trim().equals("")) {
 			passwordTip.setVisible(true);
+			getRegisterButton().setEnabled(false);
 			return false;
 		} else {
 			passwordTip.setVisible(false);
@@ -625,10 +626,12 @@ public class RegisterUI implements MouseListener{
 		if(validationPasswordField.getText().trim().equals("")) {
 			validationPasswordTip.setText("需非空");
 			validationPasswordTip.setVisible(true);
+			getRegisterButton().setEnabled(false);
 			return false;
 		} else if(!validationPasswordField.getText().trim().equals(passwordField.getText().trim())) {
 			validationPasswordTip.setText("密码不匹配");
 			validationPasswordTip.setVisible(true);
+			getRegisterButton().setEnabled(false);
 			return false;
 		} else {
 			validationPasswordTip.setVisible(false);
@@ -639,6 +642,7 @@ public class RegisterUI implements MouseListener{
 	private boolean isEmailCorrect() {
 		if(!emailTextField.getText().trim().equals("") && !isMatchEmail(emailTextField.getText().trim())) {
 			emailTip.setVisible(true);
+			getRegisterButton().setEnabled(false);
 			return false;
 		} else {
 			emailTip.setVisible(false);

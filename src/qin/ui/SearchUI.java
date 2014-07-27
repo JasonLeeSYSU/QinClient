@@ -141,12 +141,10 @@ public class SearchUI {
 							e.consume(); //关键，屏蔽掉非法输入
 						}
 						
-						if(keyChar == '\b') {
-							getFindButton().setVisible(true);
-							getAddButton().setVisible(false);
-							getShowInfoPanel().setVisible(false);
-							getNoFoundLabel().setVisible(false);
-						}
+						getFindButton().setVisible(true);
+						getAddButton().setVisible(false);
+						getShowInfoPanel().setVisible(false);
+						getNoFoundLabel().setVisible(false);
 					}
 				});
 	        	
