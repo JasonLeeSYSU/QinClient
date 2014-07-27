@@ -124,7 +124,7 @@ public class ShowQunInfoUI {
 	}
 	
 	private JLabel getQunMemberNumberLabel() {
-		JLabel qunMemberNumberLabel = new JLabel("群成员: " + qun.getQunMember().size() + " 人");
+		JLabel qunMemberNumberLabel = new JLabel("群成员: " +  qun.getQunMember().size() + " 人");
 		qunMemberNumberLabel.setBounds(new Rectangle(width*7/15, height*1/4, width*1/2, height/15));
 		
 		return qunMemberNumberLabel;

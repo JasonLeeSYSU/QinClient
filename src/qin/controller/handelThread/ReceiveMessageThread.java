@@ -1,5 +1,7 @@
 package qin.controller.handelThread;
 
+import java.util.List;
+
 import qin.controller.QinUIController;
 import qin.model.domainClass.Message;
 import qin.model.domainClass.Qun;
@@ -30,7 +32,16 @@ public class ReceiveMessageThread implements Runnable{
 			messageUI = QinUIController.getInstance().getQunMessageUIByID(message.getSourceId());
 			if(messageUI == null)
 				return ;
-			msg = ((Qun)(messageUI.getObject())).getQunName() + " ";
+			List<User> qunUser = ((Qun)(messageUI.getObject())).getQunMember();
+			
+			String username = "匿名者 ";
+			for(int i = 0; i < qunUser.size(); i++) {
+				if(qunUser.get(i).getUid() == message.getSourceId()) {
+					username = qunUser.get(i).getNickName() + "<" + message.getSourceId() + "> ";
+					break;
+				}
+			}
+			msg = username;
 		}
 		
 		msg += message.getDateTime() + "\n" + message.getDetail();
