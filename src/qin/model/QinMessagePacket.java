@@ -38,12 +38,6 @@ public class QinMessagePacket implements Serializable {
 	
 	private SendFileContainer sendFileContainer = null;
 	
-	private ReceiveAddFriendApplicationContainer receiveAddFriendApplicationContainer = null;
-	private RespondAddFriendApplicationContainer respondAddFriendApplicationContainer = null;
-	
-	private ReceiveJoinQunApplicationContainer receiveJoinQunApplicationContainer = null;
-	private RespondJoinQunApplicationContainer respondJoinQunApplicationContainer = null;
-	
 	private AddFriendListContainer addFriendListContainer = null;
 	private UserListContainer userListContainer = null;
 	
@@ -224,38 +218,6 @@ public class QinMessagePacket implements Serializable {
 	
 	public void setSendFileContainer(SendFileContainer _sendFileContainer) {
 		sendFileContainer =  _sendFileContainer;
-	}
-	
-	public void setReceiveAddFriendApplicationContainer(ReceiveAddFriendApplicationContainer rafac) {
-		receiveAddFriendApplicationContainer = rafac;
-	}
-	
-	public ReceiveAddFriendApplicationContainer getReceiveAddFriendApplicationContainer() {
-		return receiveAddFriendApplicationContainer;
-	}
-	
-	public void setRespondAddFriendApplicationContainer(RespondAddFriendApplicationContainer rafac) {
-		respondAddFriendApplicationContainer = rafac;
-	}
-	
-	public RespondAddFriendApplicationContainer getRespondAddFriendApplicationContainer() {
-		return respondAddFriendApplicationContainer;
-	}
-	
-	public void setReceiveJoinQunApplicationContainer(ReceiveJoinQunApplicationContainer rjqac) {
-		receiveJoinQunApplicationContainer = rjqac;
-	}
-	
-	public ReceiveJoinQunApplicationContainer getReceiveJoinQunApplicationContainer() {
-		return receiveJoinQunApplicationContainer;
-	}
-	
-	public void setRespondJoinQunApplicationContainer(RespondJoinQunApplicationContainer rjqac) {
-		respondJoinQunApplicationContainer = rjqac;
-	}
-	
-	public RespondJoinQunApplicationContainer getRespondJoinQunApplicationContainer() {
-		return respondJoinQunApplicationContainer;
 	}
 	
 	public AddFriendListContainer getAddFriendListContainer(){
