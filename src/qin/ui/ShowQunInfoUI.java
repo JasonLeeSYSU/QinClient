@@ -6,14 +6,19 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 
 import qin.model.Resource;
 import qin.model.domainClass.Qun;
@@ -27,7 +32,10 @@ public class ShowQunInfoUI {
 	private JPanel jContentPane = null;
 	private JButton OKButton = null;
 	
-
+	JButton qunMemberNumberButton = null;
+	JButton descriptionTipButton = null;
+	private JScrollPane tableScrollPane = null;
+	private JTable table;
 	
 	public ShowQunInfoUI(Qun qun) {
 		this.qun = qun;
@@ -82,9 +90,12 @@ public class ShowQunInfoUI {
 			jContentPane.add(getIDLabel());
 			
 			jContentPane.add(getQunOwnerLabel());
-			jContentPane.add(getQunMemberNumberLabel());
-			jContentPane.add(getDescriptionLabel());
+			jContentPane.add(getQunMemberNumberButton());
+			jContentPane.add(getDescriptionButton());
+			
+			jContentPane.add(getTableScrollPane());
 			jContentPane.add(getDescriptionTextArea());
+		
 
 			jContentPane.add(getOKButton());
 			
@@ -115,7 +126,6 @@ public class ShowQunInfoUI {
 		return IDLabel;
 	}
 	
-
 	private JLabel getQunOwnerLabel() {
 		JLabel qunOwnerLabel = new JLabel("群 主: " + qun.getQunOwnerID());
 		qunOwnerLabel.setBounds(new Rectangle(width*1/15, height*1/4, width*1/2, height/15));
@@ -123,19 +133,43 @@ public class ShowQunInfoUI {
 		return qunOwnerLabel;
 	}
 	
-	private JLabel getQunMemberNumberLabel() {
-		JLabel qunMemberNumberLabel = new JLabel("群成员: " +  qun.getQunMember().size() + " 人");
-		qunMemberNumberLabel.setBounds(new Rectangle(width*7/15, height*1/4, width*1/2, height/15));
+	private JButton getQunMemberNumberButton() {
+		if(qunMemberNumberButton == null) {
+			qunMemberNumberButton = new JButton("群成员");
+			qunMemberNumberButton.setBounds(new Rectangle(width*7/15, height*1/3, width*1/3, height*1/9));
 		
-		return qunMemberNumberLabel;
+			qunMemberNumberButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					getDescriptionTextArea().setVisible(false);
+					getTableScrollPane().setVisible(true);
+					qunMemberNumberButton.setEnabled(false);
+					descriptionTipButton.setEnabled(true);
+				}
+			});
+		}
+		
+		return qunMemberNumberButton;
 	}
 	
-	private JLabel getDescriptionLabel() {
-
-		JLabel descriptionTipLabel = new JLabel("群简介:");
-		descriptionTipLabel.setBounds(new Rectangle(width/15, height*5/15, width*4/5, height/15));
+	private JButton getDescriptionButton() {
+		if(descriptionTipButton == null) { 
+			descriptionTipButton = new JButton("群简介");
+			descriptionTipButton.setBounds(new Rectangle(width/15, height*5/15, width*1/3, height*1/9));
+			
+			descriptionTipButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					getDescriptionTextArea().setVisible(true);
+					getTableScrollPane().setVisible(false);
+					
+					descriptionTipButton.setEnabled(false);
+					qunMemberNumberButton.setEnabled(true);
+				}
+			});
+		}
 		
-		return descriptionTipLabel;
+		return descriptionTipButton;
 	}
 
 	private JTextArea getDescriptionTextArea() {
@@ -144,9 +178,61 @@ public class ShowQunInfoUI {
 		descriptionArea.setLineWrap(true);
 		descriptionArea.setBorder(new LineBorder(Color.GRAY, 1, false));
 		descriptionArea.setEditable(false);
-		descriptionArea.setBounds(new Rectangle(width*1/15, height*6/15+3, width*13/15, height*5/15));
+		descriptionArea.setBounds(new Rectangle(width*1/15, height*6/15+15, width*13/15, height*5/15));
 		
 		return descriptionArea;
+	}
+	
+	private JScrollPane getTableScrollPane() {
+		if(tableScrollPane == null) {
+			tableScrollPane = new JScrollPane(getTable());
+			tableScrollPane.setVisible(false);
+			tableScrollPane.setBorder(new LineBorder(Color.GRAY, 1, false));
+			tableScrollPane.setBounds(new Rectangle(width*1/15, height*6/15+15, width*13/15, height*5/15));
+		} 
+		
+		return tableScrollPane;
+	}
+	
+	private JTable getTable() {
+		if(table == null) {
+			 String[] tableName = { "帐号", "昵称"};
+			 String[][] tableContent = new String[qun.getQunMember().size()][2];
+			 for(int i = 0; i < qun.getQunMember().size(); i++) {
+				 tableContent[i][0] = qun.getQunMember().get(i).getUid() + "";
+				 tableContent[i][1] = qun.getQunMember().get(i).getNickName(); 
+			 }
+			 
+			 DefaultTableModel model = new DefaultTableModel();
+			 model.setDataVector(tableContent, tableName);
+			  
+			 table = new JTable(model){
+				  private static final long serialVersionUID = 7563012525369954552L;
+				  public boolean isCellEditable(int row, int column) { //表格不允许被编辑
+				  	return false;
+				  }
+			  };
+			  
+			  table.setRowHeight(20);
+			  table.getTableHeader().setReorderingAllowed(false);
+			  table.getTableHeader().setBackground(new Color(252, 168, 251));
+			  table.setGridColor(new Color(166, 228, 143));
+			  table.setPreferredScrollableViewportSize(new Dimension(550, 150));
+			  
+			  table.addMouseListener(new MouseAdapter() {
+				  @Override
+				  public void mouseClicked(MouseEvent e) {
+		    			if (e.getClickCount() == 2) {
+		    				 int r  = table.rowAtPoint(e.getPoint());
+							 if (r >= 0 && r < table.getRowCount() && r < qun.getQunMember().size()) {
+								  ShowUserInfoUI showUserInfoUI = new ShowUserInfoUI(qun.getQunMember().get(r));
+								  showUserInfoUI.showShowUserInfoUI();
+							  }
+		    			}
+		    		}
+			  });
+		} 
+		return table;
 	}
 	
 	/**
@@ -156,7 +242,7 @@ public class ShowQunInfoUI {
 		if (OKButton == null)
 		{
 			OKButton = new JButton("OK");
-			OKButton.setBounds(new Rectangle(width/2-width/8, height*12/15-8, width/4, height*2/18));
+			OKButton.setBounds(new Rectangle(width/2-width/8, height*12/15+3, width/4, height*2/18));
 			
 			OKButton.addActionListener(new ActionListener() {
 				@Override
@@ -169,5 +255,4 @@ public class ShowQunInfoUI {
 		
 		return OKButton;
 	}
-
 }
