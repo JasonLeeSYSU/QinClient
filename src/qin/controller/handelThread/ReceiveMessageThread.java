@@ -24,14 +24,19 @@ public class ReceiveMessageThread implements Runnable{
 		
 		if(isUserMessage) {
 			messageUI = QinUIController.getInstance().getPrivateMessageUIByID(message.getSourceId());
-			if(messageUI == null)
+			if(messageUI == null) {
+				System.out.println("找不到 目的主 的 Private MeaageUI");
 				return ;
+			}
 			msg = ((User)(messageUI.getObject())).getNickName() + " ";
 			
 		} else {
-			messageUI = QinUIController.getInstance().getQunMessageUIByID(message.getSourceId());
-			if(messageUI == null)
+			System.out.println("发送群信息的ID ： " + message.getQunId());
+			messageUI = QinUIController.getInstance().getQunMessageUIByID(message.getDestinationId());
+			if(messageUI == null) {
+				System.out.println("找不到 目的主 的 Quns MeaageUI");
 				return ;
+			}
 			List<User> qunUser = ((Qun)(messageUI.getObject())).getQunMember();
 			
 			String username = "匿名者 ";
@@ -44,13 +49,10 @@ public class ReceiveMessageThread implements Runnable{
 			msg = username;
 		}
 		
-		if(messageUI != null) {
-			msg += message.getDateTime() + "\n" + message.getDetail();
-			msg += "\n\n";
-			messageUI.getShowMessageTextArea().setText(messageUI.getShowMessageTextArea().getText() + msg);
-			messageUI.getShowMessageTextArea().setCaretPosition(messageUI.getShowMessageTextArea().getText().length());
-			messageUI.showMessageUI();
-		}
-	
+		msg += message.getDateTime() + "\n" + message.getDetail();
+		msg += "\n\n";
+		messageUI.getShowMessageTextArea().setText(messageUI.getShowMessageTextArea().getText() + msg);
+		messageUI.getShowMessageTextArea().setCaretPosition(messageUI.getShowMessageTextArea().getText().length());
+		messageUI.showMessageUI();
 	}
 }

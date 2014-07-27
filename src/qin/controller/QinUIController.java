@@ -243,25 +243,27 @@ public class QinUIController implements Runnable  {
 									Message message =  offLineMsg.get(i);
 									String msg = "";
 									
-									if(!message.isQunMsg()) {
-										messageUI = getPrivateMessageUIByID(message.getSourceId());
-										if(messageUI == null)
-											return ;
-										msg = ((User)(messageUI.getObject())).getNickName() + " ";
-									} else {
-										messageUI = getQunMessageUIByID(message.getSourceId());
-										if(messageUI == null)
-											return ;
+									if(message.isQunMsg()) {
+										System.out.println("离线群信息 coming");
 										
-										List<User> qunUser = ((Qun)(messageUI.getObject())).getQunMember();
-										String username = "匿名者 ";
-										for(int j = 0; j < qunUser.size(); j++) {
-											if(qunUser.get(j).getUid() == message.getSourceId()) {
-												username = qunUser.get(i).getNickName() + "<" + message.getSourceId() + "> ";
-												break;
+										messageUI = getQunMessageUIByID(message.getDestinationId());
+										if(messageUI != null) {
+											List<User> qunUser = ((Qun)(messageUI.getObject())).getQunMember();
+											String username = "匿名者 ";
+											for(int j = 0; j < qunUser.size(); j++) {
+												if(qunUser.get(j).getUid() == message.getSourceId()) {
+													username = qunUser.get(j).getNickName() + "<" + message.getSourceId() + "> ";
+													break;
+												}
 											}
-										}
-										msg = username;
+											msg = username;
+										} 
+									} else {	
+										System.out.println("离线群信息 coming");
+										messageUI = getPrivateMessageUIByID(message.getSourceId());
+										if(messageUI != null) {
+											msg = ((User)(messageUI.getObject())).getNickName() + " ";
+										} 
 									}
 									
 									if(messageUI != null) {
@@ -271,18 +273,18 @@ public class QinUIController implements Runnable  {
 										messageUI.getShowMessageTextArea().setCaretPosition(messageUI.getShowMessageTextArea().getText().length());
 										
 										messageUI.showMessageUI();
+									} else {
+										System.out.println("找不到 目的主 的 MeaageUI");
 									}
 								}
 								
 							} else {
 								heartBeatThread.stop();
-								loginUI.showErrorMessage(loginResultPacket.getResponseMsg());
-								
+								loginUI.showErrorMessage(loginResultPacket.getResponseMsg());	
 							}
 						} catch (ClassNotFoundException | IOException e1) {
 							heartBeatThread.stop();
 							loginUI.showNetWorkErrorMessage();
-							
 						}
 					}
     		});
@@ -757,6 +759,8 @@ public class QinUIController implements Runnable  {
 		if(getQunInfoByID(newQun.getQunID()) == null) {
 			quns.add(newQun);
 			mainUI.addGroup(newQun);
+		} else {
+			System.out.println("群已经存在，添加失败");
 		}
 	}
 
