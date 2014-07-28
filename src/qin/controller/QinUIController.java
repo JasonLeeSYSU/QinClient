@@ -16,7 +16,6 @@ import qin.controller.handelThread.BusinessOperationHandel;
 import qin.controller.handelThread.HeartBeatThread;
 import qin.controller.handelThread.ReceiveApplicationResponseThread;
 import qin.controller.handelThread.ReceiveApplicationThread;
-import qin.controller.handelThread.ReceiveMessageThread;
 import qin.model.Command;
 import qin.model.QinMessagePacket;
 import qin.model.Resource;
@@ -26,7 +25,6 @@ import qin.model.domainClass.Qun;
 import qin.model.domainClass.User;
 import qin.model.msgContainer.AddFriendContainer;
 import qin.model.msgContainer.JoinQunContainer;
-import qin.testcase.StaticTestCase;
 import qin.ui.CreateQunUI;
 import qin.ui.LoginUI;
 import qin.ui.MainUI;
@@ -78,9 +76,11 @@ public class QinUIController implements Runnable  {
 	       return SingleUIController;  
 	}  
 	
+	/***
+	 * 显示登录页面
+	 */
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		getLoginUI().showLoginUI();
 	}
 	
@@ -110,15 +110,7 @@ public class QinUIController implements Runnable  {
    	 			public void actionPerformed(ActionEvent e) {
    	 				user = registerUI.getRegisterUserInfo();
    				
-   	 				System.out.println("Register ...................");
-   	 				System.out.println("name: " + user.getNickName());
-   	 				System.out.println("password: " + user.getPassword());
-   	 				System.out.println("email: " + user.getEmail());
-   	 				System.out.println("gender: " + user.getGender());
-   	 				System.out.println(user.getAddress().getProvince() + " " + user.getAddress().getCity());
-   	 				System.out.println("head image: " + user.getHeadImage());
-   	 				System.out.println("Register ...................");
-   				
+   	 				// 获取用户注册信息
    	 				String nickname = user.getNickName();
    	 				String password = getMD5(user.getPassword());
    	 				String email = user.getEmail();
@@ -135,7 +127,6 @@ public class QinUIController implements Runnable  {
    	 						registerUI.hideRegisterUI();
    	 						loginUI.showLoginUI();
    	 						loginUI.getIDField().setText(Uid + "");
-   	 					
    	 					} else {
    	 						registerUI.showErrorMessage();
    	 					}
@@ -167,23 +158,24 @@ public class QinUIController implements Runnable  {
 				@SuppressWarnings("deprecation")
 				@Override
 				public void actionPerformed(ActionEvent e) {
-						System.out.println("登录");
-						
+						// 获取登录ID和密码
 						int loginID = new Integer(loginUI.getIDField().getText());
 						String password = getMD5(loginUI.getPasswordField().getText());
 						
+						// 启动心跳进程
 						heartBeatThread = new HeartBeatThread(loginID);
 						heartBeatThread.start();
 						
 						try {
 							QinMessagePacket loginResultPacket = BusinessOperationHandel.login(loginID, password, ClientListenerPort);
 							
-							if(loginResultPacket == null) {
+							if(loginResultPacket == null) { 
+								// 网络异常
 								heartBeatThread.stop();
-								loginUI.showNetWorkErrorMessage();
+								loginUI.showNetWorkErrorMessage(); 
 								
-							} else if(loginResultPacket.getCommand().equals(Command.LOGINSUCCESS)) {
-								
+							} else if(loginResultPacket.getCommand().equals(Command.LOGINSUCCESS)) { 
+								// 成功登录
 								user = loginResultPacket.getLoginContainer().getUser();
 								quns = loginResultPacket.getQunListContainer().getQunList();
 								ArrayList<User> myFriends = loginResultPacket.getUserListContainer().getUserList();
@@ -205,8 +197,9 @@ public class QinUIController implements Runnable  {
 								
 								ArrayList<Message> offLineMsg = loginResultPacket.getMessageListContainer().getMessageList();
 								ArrayList<AddFriendContainer> addFriendContainers = loginResultPacket.getAddFriendListContainer().getAddFriendList();
-								ArrayList<JoinQunContainer> joinQunContainers = loginResultPacket.getJoinQunListContainer().getJoinQunList();
+								ArrayList<JoinQunContainer> joinQunListContainers = loginResultPacket.getJoinQunListContainer().getJoinQunList();
 								
+								// 处理添加好友的请求、结果
 								for(int i = 0; i < addFriendContainers.size(); i++) {
 									if(addFriendContainers.get(i).getState() == AddFriendContainer.CHECKED) {
 										 int sourceID = addFriendContainers.get(i).getSourceId();
@@ -221,23 +214,25 @@ public class QinUIController implements Runnable  {
 									}
 								}
 								
-								
-								for(int i = 0; i < joinQunContainers.size(); i++) {
-									if(joinQunContainers.get(i).getState() == JoinQunContainer.CHECKED) {
-										 int sourceID = joinQunContainers.get(i).getUserId();
-										 int addedQunID = joinQunContainers.get(i).getQunId();
-										 
+								// 处理加入群的请求、结果
+								System.out.println("joinQunListContainers 大小： " + joinQunListContainers.size());
+								for(int i = 0; i < joinQunListContainers.size(); i++) {
+									if(joinQunListContainers.get(i).getState() == JoinQunContainer.CHECKED) {
+										 int sourceID = joinQunListContainers.get(i).getUserId();
+										 int addedQunID = joinQunListContainers.get(i).getQunId();
+										 System.out.println("有人想加入我的群： " + sourceID + " want to join " + addedQunID);
 										 Thread receiveJoinQunApplicationThread = new Thread(new ReceiveApplicationThread(sourceID, addedQunID));
 										 receiveJoinQunApplicationThread.start();
 									} else {
-										 int addedQunID = joinQunContainers.get(i).getQunId();
-										 boolean isAdded = joinQunContainers.get(i).getState() == JoinQunContainer.PASSED;
-										 
+										 int addedQunID = joinQunListContainers.get(i).getQunId();
+										 boolean isAdded = joinQunListContainers.get(i).getState() == JoinQunContainer.PASSED;
+										 System.out.println("用户" + joinQunListContainers.get(i).getUserId() + " 被同意/拒绝加入他人的群： " + " to Qun " + addedQunID);
 										Thread receiveJoinQunResponseThread = new Thread(new ReceiveApplicationResponseThread(false, addedQunID, isAdded));
 										receiveJoinQunResponseThread.start();
 									}
 								}
 								
+								// 显示离线信息
 								for(int i = 0; i < offLineMsg.size(); i++) {
 									MessageUI messageUI = null;
 									Message message =  offLineMsg.get(i);
@@ -274,7 +269,7 @@ public class QinUIController implements Runnable  {
 										
 										messageUI.showMessageUI();
 									} else {
-										System.out.println("找不到 目的主 的 MeaageUI");
+										//System.out.println("找不到 目的主 的 MeaageUI");
 									}
 								}
 								
@@ -295,8 +290,6 @@ public class QinUIController implements Runnable  {
 			loginUI.getRegeditButton().addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("注册");
-					
 					loginUI.hideLoginUI();
 					getRegisterUI().showRegisterUI();
 				}
@@ -309,24 +302,25 @@ public class QinUIController implements Runnable  {
 	private MainUI createMainUI(User _user) {
 		if(mainUI == null) {
 			this.user = _user;
-		
 			mainUI = new MainUI(this.user);
 		
+			// 关闭主界面时，退出客户端
 			mainUI.getjFrame().addWindowListener(new java.awt.event.WindowAdapter() {
+				@SuppressWarnings("deprecation")
 				@Override
 				public void windowClosing(java.awt.event.WindowEvent e) {
 					try {
-						System.out.println("退出");
 						BusinessOperationHandel.logout(user.getUid());
-						//heartBeatThread.stop();
+						heartBeatThread.stop();
 					} catch (ClassNotFoundException | IOException e1) {
-						e1.printStackTrace();
+						//e1.printStackTrace();
 					}
 					
 					System.exit(0);
 				}
 			});
         
+			// 双击创建群Lable，弹出创建群的UI
 			mainUI.getCreateQunLabel().addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -336,6 +330,7 @@ public class QinUIController implements Runnable  {
 				}
 			});
 		
+			// 双击搜索Lable，弹出搜索UI
 			mainUI.getSearchLabel().addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -345,11 +340,12 @@ public class QinUIController implements Runnable  {
 				}
 			});
 		
+			// 在好友列表和群列表上双击时，弹出聊天UI
 			mainUI.getFriendsTree().addMouseListener(new MouseAdapter() {
 				@Override
-				public void mousePressed(MouseEvent e) {
+				public void mousePressed(MouseEvent e) { 
 					if (e.getClickCount() == 2) {
-                	
+						
 						JTree tree = (JTree) e.getSource();
 						int rowLocation = tree.getRowForLocation(e.getX(), e.getY());
 						TreePath treepath = tree.getPathForRow(rowLocation);
@@ -375,6 +371,7 @@ public class QinUIController implements Runnable  {
 				}
 			});
 		
+			// 在好友列表和群列表上右击选择“聊天”时，弹出聊天UI
 			mainUI.getSendMessageMenuItem().addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e){
 					TreePath treePath = mainUI.getFriendsTree().getSelectionPath();
@@ -390,7 +387,6 @@ public class QinUIController implements Runnable  {
 			        	
 						} else if(obj instanceof Qun && ((Qun)obj).getQunID() != Resource.NotTreeNodeSign) {
 							MessageUI messageUI = getQunMessageUIByID(((Qun)obj).getQunID());
-							
 							if(messageUI != null) {
 								messageUI.showMessageUI();
 							}
@@ -399,6 +395,7 @@ public class QinUIController implements Runnable  {
 				}
 			});
 		
+			// 在好友列表和群列表上右击选择“查看资料”时，弹出用户或者群的详细信息
 			mainUI.getShowInfoMenuItem().addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e){
 					TreePath treePath = mainUI.getFriendsTree().getSelectionPath();
@@ -415,7 +412,6 @@ public class QinUIController implements Runnable  {
 							showQunInfoUI.showQunInfoUI();
 						}
 					}
-
 				}
 			});
 		} 
@@ -439,28 +435,27 @@ public class QinUIController implements Runnable  {
 				public void actionPerformed(ActionEvent e){
 					Object obj = searchUI.getSearchObj();
 					
-					if(obj instanceof User) {
-						System.out.println("is User" + ((User)obj).getUid());
+					if(obj instanceof User) { 
+						// 查询用户
 						try {
 							searchUI.getFindButton().setVisible(false);
 							searchUI.getAddButton().setVisible(true);
 							
 							User findUser  = BusinessOperationHandel.findUser(((User)obj).getUid());
-							searchUI.showFindResult(findUser);
+							searchUI.showFindResult(findUser); // 如果成功找到一个用户，则显示其信息
 						} catch (ClassNotFoundException | IOException e1) {
 							searchUI.showFindResult(null);
 						}
-						
 					} else {
-						System.out.println("is Group" + ((Qun)obj).getQunID());
 						try {
+							// 查询群
 							searchUI.getFindButton().setVisible(false);
 							searchUI.getAddButton().setVisible(true);
 							
 							Qun findQun = BusinessOperationHandel.findQun(((Qun)obj).getQunID(), false);
 							searchUI.showFindResult(findQun);
 						} catch (ClassNotFoundException | IOException e1) {
-							searchUI.showFindResult(null);;
+							searchUI.showFindResult(null);
 						}	
 					} 
 				}
@@ -474,6 +469,7 @@ public class QinUIController implements Runnable  {
 					Object obj = searchUI.getAddObj();
 					
 					if(obj instanceof User) {
+						// 申请添加好友
 						if(getFriendInfoByID(((User)obj).getUid()) == null) {
 							BusinessOperationHandel.addFriend(user.getUid(), ((User)obj).getUid());
 							searchUI.showAddMessage();
@@ -482,6 +478,7 @@ public class QinUIController implements Runnable  {
 						}
 							
 					} else {
+						// 申请加入群
 						if(getQunInfoByID(((Qun)obj).getQunID()) == null) {
 							BusinessOperationHandel.joinQun(user.getUid(), ((Qun)obj).getQunID());
 							searchUI.showAddMessage();
@@ -500,7 +497,6 @@ public class QinUIController implements Runnable  {
 		    		}
 		    		
 		    		public void mouseEntered(MouseEvent e) {
-		    			// TODO Auto-generated method stub
 		    			Object obj = searchUI.getAddObj();
 						
 						if(obj instanceof User && ((User)obj).getUid() == user.getUid()) {
@@ -514,7 +510,11 @@ public class QinUIController implements Runnable  {
 		
 		return searchUI;
 	}
-	
+
+	/***
+	 * 为创建群UI添加监听事件
+	 * @return
+	 */
 	private CreateQunUI getCreateQunUI() {
 		
 		if(createQunUI == null) {
@@ -526,6 +526,8 @@ public class QinUIController implements Runnable  {
 					int qunID = BusinessOperationHandel.createQun(user.getUid(), createQun.getQunName(), createQun.getQunDescription());
 					
 					if(qunID != Resource.CreateQunFailQunID) {
+						// 成功创建群
+						createQun.setQunOwnerID(user.getUid());
 						createQun.setQunID(qunID);
 						List<User> qunUser = new ArrayList<User>();
 						qunUser.add(user);
@@ -544,7 +546,7 @@ public class QinUIController implements Runnable  {
 	}
 		
 	/***
-	 * 根据好友ID查找好友
+	 * 根据好友ID在本地查找自己的好友
 	 * @param FriendID
 	 * @return
 	 */
@@ -563,7 +565,7 @@ public class QinUIController implements Runnable  {
 	}
 	
 	/***
-	 * 根据群号找群
+	 * 根据群号在本地找自己加入的群
 	 * @param GroupID
 	 * @return
 	 */
@@ -588,6 +590,7 @@ public class QinUIController implements Runnable  {
 			}
 		}
 		
+		// 如果在PrivateMessageUIs找不到对应的UI，则新创建一个
 		for(int i = 0; i < onlineFriends.size(); i++) {
 			if(onlineFriends.get(i).getUid() == UserID) {
 				MessageUI messageUI = new MessageUI(onlineFriends.get(i), user.getUid());
@@ -619,6 +622,7 @@ public class QinUIController implements Runnable  {
 			}
 		}
 		
+		// 如果在QunMessageUIs找不到对应的UI，则新创建一个
 		for(int i = 0; i < quns.size(); i++) {
 			if(quns.get(i).getQunID() == GroupID) {
 				MessageUI messageUI = new MessageUI(quns.get(i), user.getUid());
@@ -641,10 +645,8 @@ public class QinUIController implements Runnable  {
 				ShowApplicationUI showApplicationUI = new ShowApplicationUI(sourceUser, user.getUid());
 				showApplicationUI.getJFrame();
 			}
-			
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -658,14 +660,19 @@ public class QinUIController implements Runnable  {
 			User sourceUser = BusinessOperationHandel.findUser(sourceID);
 			Qun qun = getQunInfoByID(qunID);
 			
-			if(qun == null || sourceUser == null || qun.getQunOwnerID() != user.getUid())
-				return ;
+			if(qun == null || sourceUser == null || qun.getQunOwnerID() != user.getUid()) {
+				if(qun == null) System.out.println("群为空");
+				if(sourceUser == null) System.out.println("源用户为空");
+				if(qun.getQunOwnerID() != user.getUid()) System.out.println("群主不是当前用户" + qun.getQunOwnerID() + " VS " + user.getUid());
 				
+				return ;
+			}
+			
+			System.out.println(qun.getQunName() + " " + qun.getQunID() + " " + qun.getQunOwnerID() + " " + qun.getQunDescription());
 			ShowApplicationUI showApplicationUI = new ShowApplicationUI(sourceUser, qun.getQunID(), qun.getQunName());
 			showApplicationUI.getJFrame();	
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -688,10 +695,8 @@ public class QinUIController implements Runnable  {
 			} else {
 				System.out.println("showAddFriendApplicationResponse addedUser 不存在");
 			}
-			
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -702,7 +707,6 @@ public class QinUIController implements Runnable  {
 	 */
 	public void showJoinQunApplicationResponse(int addedQunID, boolean isSuccess) {
 		try {
-			
 			Qun addedQun = null;
 				
 			if(isSuccess)		
@@ -719,33 +723,38 @@ public class QinUIController implements Runnable  {
 			} else {
 				System.out.println("showJoinQunApplicationResponse addedQun 不存在");
 			}
-	
-			
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
+	/***
+	 * 好友登录
+	 * 设置好友的IP地址和端口，用于P2P文件传输
+	 * @param ID
+	 * @param IP
+	 * @param Port
+	 */
 	public void friendOnline(int ID, String IP, int Port) {
 		User friend = getFriendInfoByID(ID);
-		System.out.println("用户登录了---" + ID);
 		if(friend != null && !friend.isUserOnline()) {
 			offlineFriends.remove(friend);
 			onlineFriends.add(friend);
 			friend.online();
 			friend.setIPAddr(IP);
 			friend.setPort(Port);
-			System.out.println("用户登录了---");
 			if(getPrivateMessageUIByID(ID) != null) {
-				System.out.println("用户登录了--- 改界面");
 				getPrivateMessageUIByID(ID).UserLoginUI();
 			}
 			
 			mainUI.friendOnlining(ID);
 		}
 	} 
-	
+
+	/***
+	 * 好友下线
+	 * @param ID
+	 */
 	public void friendOffline(int ID) {
 		User friend = getFriendInfoByID(ID);
 		if(friend != null && friend.isUserOnline()) {
@@ -759,6 +768,10 @@ public class QinUIController implements Runnable  {
 		}
 	}
 	
+	/***
+	 * 添加新的好友
+	 * @param newUser
+	 */
 	public void addFriend(User newUser) {
 		if(getFriendInfoByID(newUser.getUid()) == null) {
 			if(newUser.isUserOnline()) {
@@ -771,19 +784,47 @@ public class QinUIController implements Runnable  {
 		}
 	}
 	
+	/***
+	 * 添加新群
+	 * @param newQun
+	 */
 	public void addQun(Qun newQun) {
 		if(getQunInfoByID(newQun.getQunID()) == null) {
 			quns.add(newQun);
 			mainUI.addGroup(newQun);
 		} else {
-			System.out.println("群已经存在，添加失败");
+			//System.out.println("群已经存在，添加失败");
 		}
 	}
 
+	/***
+	 * 同意一个用户加入自己的群后，在本地数据中加入被添加用户的信息
+	 * @param qunID
+	 * @param addedUser
+	 */
+	public void addUserIntoMyQun(int qunID, User addedUser) {
+		Qun qun = getQunInfoByID(qunID);
+		
+		if(qun != null && qun.getQunOwnerID() == user.getUid()) {
+			for(int i = 0; i < qun.getQunMember().size(); i++) {
+				if(qun.getQunMember().get(i).getUid() == addedUser.getUid())
+					return ;
+			}
+	
+			qun.getQunMember().add(addedUser);
+		}
+	}
+	
+	
 	public void setClientListenerPort(int port) {
 		ClientListenerPort = port;
 	}
 	
+	/***
+	 * MD5 用于加密密码
+	 * @param password
+	 * @return
+	 */
 	public String getMD5(String password) {
 		  String s = null;
 		  char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',  'e', 'f'};

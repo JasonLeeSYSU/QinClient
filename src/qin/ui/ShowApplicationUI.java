@@ -233,6 +233,7 @@ public class ShowApplicationUI {
 			  	
 			JOptionPane.showMessageDialog(null, "您与 用户 " + sourceUser.getNickName() + " 已成为好友\n赶紧开始聊天吧！", "添加好友", JOptionPane.DEFAULT_OPTION); 
 		} else {
+			QinUIController.getInstance().addUserIntoMyQun(addedQunID, sourceUser);
 			BusinessOperationHandel.respondJoinQunApplication(sourceUser.getUid(), addedQunID, true);
 		}
 		

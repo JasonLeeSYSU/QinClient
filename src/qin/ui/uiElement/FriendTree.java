@@ -80,7 +80,6 @@ public class FriendTree {
         tree.scrollPathToVisible(new TreePath(offlineSubTree.getPath()));
     }
 
-    
     public JTree getJTree() {
     	return tree;
     } 
@@ -239,6 +238,10 @@ public class FriendTree {
         return user;
     }
     
+    /***
+     * 添加群列表
+     * @param groupList
+     */
     public void addNodeGroupTree(List<Qun> groupList) {
     	for(int i = 0; i < groupList.size(); i++) {
     		addNodeGroupTree(groupList.get(i));

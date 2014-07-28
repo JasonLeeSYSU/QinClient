@@ -1,13 +1,18 @@
 package qin.ui.uiElement;
 import javax.swing.ImageIcon;
 
+/***
+ * 图片生成
+ */
 public class ImageCreator {
-
+	
+	/***
+	 * Load the images and create an array of indexes.
+	 * @param path
+	 * @param files
+	 * @return
+	 */
     public static ImageIcon[] createImageIcons(String path, String[] files) {
-
-    	/***
-    	 * Load the images and create an array of indexes.
-    	 */
     	ImageIcon[]  images = new ImageIcon[files.length];
         for (int i = 0; i < files.length; i++) {
             images[i] = createImageIcon(path + files[i]);

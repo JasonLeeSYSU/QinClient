@@ -19,13 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import qin.controller.QinController;
-import qin.controller.QinUIController;
 import qin.controller.handelThread.BusinessOperationHandel;
 import qin.model.Resource;
 import qin.model.domainClass.Qun;
 import qin.model.domainClass.User;
-import qin.testcase.StaticTestCase;
 
 public class ShowApplicationResponseUI {
 

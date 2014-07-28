@@ -25,6 +25,7 @@ public class ReceiveApplicationThread implements Runnable {
 		if(isAddFriend) {
 			QinUIController.getInstance().showAddFriendApplication(sourceID);
 		} else {
+			System.out.println("加群： " + "用户" + sourceID + " 群ID " + qunID);
 			QinUIController.getInstance().showJoinQunApplication(sourceID, qunID);
 		}
 	}

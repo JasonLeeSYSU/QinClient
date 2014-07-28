@@ -2,20 +2,15 @@ package qin.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -27,28 +22,27 @@ import javax.swing.JTree;
 import qin.model.Resource;
 import qin.model.domainClass.Qun;
 import qin.model.domainClass.User;
-import qin.testcase.StaticTestCase;
 import qin.ui.uiElement.FriendTree;
 
+/***
+ * Qin Client 主界面
+ *
+ */
 public class MainUI{
-
 	int MainUIWidth = Resource.MainUIWidth;
 	int MainUIHeight = Resource.MainUIHeight;
 	
 	User user = null;
-	
     private JFrame jFrame = null;
     private JPanel jContentPane = null;
     private JPanel FriendListPanel = null;
     private FriendTree friendTree = null;
-    
     private JLabel ImageLabel = null;
     private JLabel NameLabel = null;
     private JLabel IDLabel  = null;
     private JLabel SearchLabel = null;
     private JLabel CreateQunLabel = null;
     private JLabel NotifyLabel = null;
-    
     private JMenuItem sendMessageMenuItem = null;
     private JMenuItem showInfoMenuItem = null;
 	
@@ -56,6 +50,9 @@ public class MainUI{
     	this.user = user;
     }
     
+    /***
+     * 显示 主界面
+     */
     public void showMainUI() {
     	getjFrame().setVisible(true);
     }
@@ -64,7 +61,6 @@ public class MainUI{
      * 初始化窗体
      */
     public JFrame getjFrame() {
-    	
         if (jFrame == null) {
             jFrame = new JFrame("Qin");
             jFrame.setSize(new Dimension(MainUIWidth, MainUIHeight));
@@ -83,7 +79,6 @@ public class MainUI{
     }
 
   
-
     /**
      * 初始化 jContentPane
      */
@@ -96,7 +91,6 @@ public class MainUI{
             jContentPane.add(getIDLabel());
             jContentPane.add(getSearchLabel());
             jContentPane.add(getCreateQunLabel());
-           // jContentPane.add(getNotifyLabel());
             
             jContentPane.add(getFriendListPanel());
         }
@@ -111,6 +105,7 @@ public class MainUI{
     		ImageLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
     		ImageLabel.setBounds(new Rectangle(20, 10, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
     		
+    		// 点击用户头像，弹出用户详细信息
     		ImageLabel.addMouseListener(new MouseAdapter() {
 	    		@Override
 	    		public void mouseClicked(MouseEvent e) {
@@ -135,7 +130,6 @@ public class MainUI{
     		NameLabel.setForeground(Color.BLACK);
     		NameLabel.setText(user.getNickName());
     	}
-    	
         return NameLabel;
     }
     
@@ -220,17 +214,17 @@ public class MainUI{
     	return getFriendTree().getJTree();
     } 
     
+    /***
+     * 创建弹出菜单对象
+     * @return
+     */
     private JPopupMenu createPopMenu() {
-
-		//创建弹出菜单对象
 		JPopupMenu popMenu=new JPopupMenu();
-
 		sendMessageMenuItem  = new JMenuItem("聊天");
 		showInfoMenuItem  = new JMenuItem("查看资料");
-
 		popMenu.add(sendMessageMenuItem);
 		popMenu.add(showInfoMenuItem);
-
+		
 		return popMenu;
     }
     

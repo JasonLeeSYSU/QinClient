@@ -10,7 +10,6 @@ import qin.controller.handelThread.basicOperation.MessagePacketSender;
 import qin.model.*;
 import qin.model.domainClass.*;
 import qin.model.msgContainer.*;
-import qin.testcase.StaticTestCase;
 
 public class BusinessOperationHandel {
 	

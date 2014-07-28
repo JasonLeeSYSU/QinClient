@@ -199,6 +199,14 @@ public class RegisterUI implements MouseListener{
 			nicknameTextField.setBounds(new Rectangle(width*3/10, height/15, width/2,  height/15));
 			
 			nicknameTextField.addMouseListener(this);
+			// 限制只能输入10个字母
+			nicknameTextField.addKeyListener(new KeyAdapter(){
+				public void keyTyped(KeyEvent e) {				
+					if(nicknameTextField.getText().length() >= 10) {	
+						e.consume(); 
+					}
+				}
+			});
 		}
 		
 		return nicknameTextField;
@@ -237,6 +245,14 @@ public class RegisterUI implements MouseListener{
 			passwordField.setBounds(new Rectangle(width*3/10, height*2/15, width/2,  height/15));
 			
 			passwordField.addMouseListener(this);
+			// 限制只能输入10个字母
+			passwordField.addKeyListener(new KeyAdapter(){
+				public void keyTyped(KeyEvent e) {				
+					if(passwordField.getText().length() >= 10) {	
+							e.consume(); 
+					}
+				}
+			});
 		}
 		
 		return passwordField;
@@ -274,7 +290,15 @@ public class RegisterUI implements MouseListener{
 			validationPasswordField.setBorder(new LineBorder(Color.black, 1, true));
 			validationPasswordField.setBounds(new Rectangle(width*3/10, height*3/15, width/2,  height/15));
 			
-			validationPasswordField.addMouseListener(this);
+			validationPasswordField.addMouseListener(this);			// 限制只能输入10个字母
+			validationPasswordField.addKeyListener(new KeyAdapter(){
+				public void keyTyped(KeyEvent e) {				
+					if(validationPasswordField.getText().length() >= 10) {	
+							e.consume(); 
+					}
+				}
+			});
+			
 		}
 		
 		return validationPasswordField;
@@ -310,10 +334,7 @@ public class RegisterUI implements MouseListener{
 			emailTextField = new JTextField();
 			emailTextField.setBorder(new LineBorder(Color.black, 1, true));
 			emailTextField.setBounds(new Rectangle(width*3/10, height*4/15, width/2,  height/15));
-			
 			emailTextField.addMouseListener(this);
-			
-			// 限制只能输入2个数字
 			emailTextField.addKeyListener(new KeyAdapter(){
 				public void keyTyped(KeyEvent e) {
 					isEmailCorrect();

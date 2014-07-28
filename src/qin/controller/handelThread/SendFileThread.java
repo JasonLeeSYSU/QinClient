@@ -2,16 +2,13 @@ package qin.controller.handelThread;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -19,13 +16,16 @@ import java.nio.file.Path;
 import javax.swing.SwingWorker;
 
 import qin.controller.QinUIController;
-import qin.controller.handelThread.ReceiveFileThread.ReceiveFileTask;
 import qin.model.Command;
 import qin.model.QinMessagePacket;
 import qin.model.domainClass.User;
 import qin.model.msgContainer.SendFileContainer;
 import qin.ui.MessageUI;
 
+/***
+ * 发送文件线程
+ *
+ */
 public class SendFileThread implements Runnable, PropertyChangeListener
 {
 	private int sourceID;
@@ -51,7 +51,6 @@ public class SendFileThread implements Runnable, PropertyChangeListener
 	 * @param filePath
 	 */
 	public SendFileThread(int sourceID, int destinationID, String filePath) {
-		
 		this.sourceID = sourceID;
 		this.destinationID = destinationID;
 		this.filePath = filePath;
@@ -67,11 +66,8 @@ public class SendFileThread implements Runnable, PropertyChangeListener
 	@Override
 	public void run() {
 		try {
-			
 			// 连接接收者
 			socket = new Socket(receiverIP, receiverPort);
-		
-			// 改变UI界面
 			messageUI.waitForSendFile();
 			
 			if(isCanSendFile()) {  // 对方同意接受文件
@@ -79,10 +75,7 @@ public class SendFileThread implements Runnable, PropertyChangeListener
 			} else { // 对方拒绝接收文件
 				messageUI.giveUpSend();
 			}
-			
-			
 		} catch (Exception e) {
-			messageUI.sendFileError();
 			System.out.println(e.toString());
 		} 
 	}
@@ -140,26 +133,24 @@ public class SendFileThread implements Runnable, PropertyChangeListener
 	class SendFileTask extends SwingWorker<Void, Void> {
 		int progress = 0;
 		
+		@SuppressWarnings("resource")
 		@Override
 		protected Void doInBackground() throws Exception {
-			// TODO Auto-generated method stub
-			
 			int len;
 			byte[] buff = new byte[128];
 	        
 			InputStream fileStream  = new FileInputStream(new File(filePath));
 			DataOutputStream outPutStream = new DataOutputStream(socket.getOutputStream());
 			
+			// 发送文件
 	        while ((len = fileStream.read(buff)) != -1) {
 	        	outPutStream.write(buff, 0, len);
 	        	hadSendSize += len;
-	        	
 	             progress = (int)(100 * hadSendSize/totalSize);
 	             setProgress(Math.min(progress, 100));
 	        }
 	        
 	        messageUI.finishSendFile();;  
-	        
 	        socket.close();
 	        
 			return null;
@@ -167,9 +158,11 @@ public class SendFileThread implements Runnable, PropertyChangeListener
 		
 	}
 
+	/***
+	 * 更改文件传输进度条
+	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		// TODO Auto-generated method stub
 		 if ("progress" == evt.getPropertyName()) {
 	           int progress = (Integer) evt.getNewValue();
 	            messageUI.getProgressBar().setValue(progress);

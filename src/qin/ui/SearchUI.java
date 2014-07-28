@@ -10,11 +10,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -23,11 +21,14 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 import qin.model.Resource;
-import qin.model.domainClass.Address;
 import qin.model.domainClass.Qun;
 import qin.model.domainClass.User;
-import qin.testcase.StaticTestCase;
 
+/***
+ * 搜索UI
+ * 可以搜索用户、群
+ * 搜索出来后可以添加好友、加入群
+ */
 public class SearchUI {
 
 		private int SearchUIWidth = Resource.SearchUIWidth;
@@ -44,6 +45,7 @@ public class SearchUI {
 		private JButton findButton = null;
 		private JButton addButton = null;
 	    private JLabel tipLabel = null;
+	    private JLabel headImageLabel = null;
 	    private JLabel noFoundLabel = null;
 	    private JPanel showInfoPanel = null;
 	    private JLabel nameLabel = null;
@@ -53,10 +55,16 @@ public class SearchUI {
 			isUser = true;
 		}
 		
+		/***
+		 * 显示 搜索UI
+		 */
 		public void showSearchUI() {
 			getJFrame().setVisible(true);
 		}
 		
+		/***
+		 * 隐藏搜索UI
+		 */
 		public void hideSearchUI() {
 			getJFrame().setVisible(false);
 		}
@@ -67,7 +75,7 @@ public class SearchUI {
 	    private JFrame getJFrame() {
 	    	
 	        if (jFrame == null) {
-	            jFrame = new JFrame("添加好友／群");
+	            jFrame = new JFrame("搜索、添加好友／群");
 	            jFrame.setResizable(false);
 	            jFrame.setSize(new Dimension(SearchUIWidth, SearchUIHeight));
 	              
@@ -80,6 +88,7 @@ public class SearchUI {
 	            jFrame.add(getJPanel());    
 	            jFrame.setVisible(false);
 	            
+	            // 点击关闭搜索界面，实际是隐藏搜索UI
 	            jFrame.addWindowListener(new java.awt.event.WindowAdapter() {
 	                @Override
 	                public void windowClosing(java.awt.event.WindowEvent e) {
@@ -90,8 +99,6 @@ public class SearchUI {
 	        return jFrame;
 	    }
 	    
-	    
-
 	    /**
 	     * 初始化 jPanel
 	     */
@@ -99,17 +106,19 @@ public class SearchUI {
 	        JPanel jPanel = new JPanel();
 	        jPanel.setLayout(null);
 	        jPanel.setEnabled(true);
-        	
 	        jPanel.add(getUserButton());
 	        jPanel.add(getGroupButton());
 	        jPanel.add(getNoFoundLabel());
-	        
 	        jPanel.add(getSearchPanel());
 	        jPanel.add(getShowInfoPanel());
 	        
 	        return jPanel;
 	    }
 		
+	    /***
+	     * 搜索UI 的搜索画板
+	     * @return
+	     */
 	    private JPanel getSearchPanel() {
 	    	  JPanel jPanel = new JPanel();
 		      jPanel.setLayout(null);
@@ -127,6 +136,10 @@ public class SearchUI {
 		      return jPanel;
 	    }
 	    
+	    /**
+	     * 初始化搜索输入栏
+	     * @return
+	     */
 	    public JTextField getInputField() {
 	        if (inputField == null) {
 	        	
@@ -161,7 +174,11 @@ public class SearchUI {
 	        
 	        return inputField;
 	    }
-	    
+
+	    /***
+	     * 初始化 搜索提示内容
+	     * @return
+	     */
 	    private JLabel getTipLabel() {
 	    	if(tipLabel == null) {
 	    		 tipLabel = new JLabel("通过帐号查找用户: ");
@@ -171,6 +188,11 @@ public class SearchUI {
 	    	return tipLabel;
 	    }
 	    
+	    /***
+	     * 改变搜索对象
+	     * 搜索用户
+	     * @return
+	     */
 	    private JButton getUserButton() {
 	    	if(userButton == null) {
 	    		userButton = new JButton("用户");
@@ -201,6 +223,11 @@ public class SearchUI {
 	    	return userButton;
 	    }
 	    
+	    /***
+	     * 改变搜索对象
+	     * 搜索群
+	     * @return
+	     */
 	    private JButton getGroupButton() {
 	    	if(groupButton == null) {
 	    		groupButton = new JButton("群");
@@ -229,6 +256,10 @@ public class SearchUI {
 	    	return groupButton;
 	    }
 	    
+	    /***
+	     * 初始化 “下一步”按钮
+	     * @return
+	     */
 	    public JButton getFindButton() {
 	    	if(findButton == null) {
 	    		findButton = new JButton("下一步");
@@ -237,11 +268,10 @@ public class SearchUI {
 	    		findButton.addMouseListener(new MouseAdapter() {
 	        		public void mouseEntered(MouseEvent e) {
 	        			if(inputField.getText().length() > 0) {
-	        				getFindButton().setEnabled(true);
+	        				getFindButton().setEnabled(true); 
 	        			} else {
 	        				getFindButton().setEnabled(false);
 	        			}
-	        		
 	        		}
 	        		
 	        	});
@@ -252,6 +282,10 @@ public class SearchUI {
 	    	return findButton;
 	    }
 	    
+	    /***
+	     * 初始化 “加为好友”按钮
+	     * @return
+	     */
 	    public JButton getAddButton() {
 	    	if(addButton == null) {
 	    		addButton = new JButton("加为好友");
@@ -263,6 +297,10 @@ public class SearchUI {
 	    	return addButton;
 	    }
 	    
+	    /***
+	     * 搜索UI 显示搜索对象简单信息滑板
+	     * @return
+	     */
 	    private JPanel getShowInfoPanel() {
 	    	if(showInfoPanel == null) {
 	    		showInfoPanel = new JPanel();
@@ -282,25 +320,34 @@ public class SearchUI {
 	    	return showInfoPanel;
 	    }
 	    
+	    /***
+	     * 设置头像
+	     * @param ImagePath
+	     * @return
+	     */
 	    private JLabel getImageLabel(String ImagePath) {
-	    	
-	    	JLabel headImageLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
-	    	headImageLabel.setBounds(new Rectangle(SearchUIWidth*3/10, SearchUIHeight*1/15, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
+	    	if(headImageLabel == null) {
+	    		headImageLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
+	    		headImageLabel.setBounds(new Rectangle(SearchUIWidth*3/10, SearchUIHeight*1/15, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
 	    		
-	    	headImageLabel.addMouseListener(new MouseAdapter() {
-	    		@Override
-	    		public void mouseClicked(MouseEvent e) {
-	    			if (e.getClickCount() == 2) {
-	    				if(isUser) {
-	    					ShowUserInfoUI showUserInfoUI = new ShowUserInfoUI(user);
-	    					showUserInfoUI.showShowUserInfoUI();
-	    				} else {
-	    					ShowQunInfoUI showQunInfoUI = new ShowQunInfoUI(group);
-	    					showQunInfoUI.showQunInfoUI();
+	    		headImageLabel.addMouseListener(new MouseAdapter() {
+	    			@Override
+	    			public void mouseClicked(MouseEvent e) {
+	    				if (e.getClickCount() == 2) { 
+	    					// 双击头像，显示详细信息
+	    					if(isUser) {
+	    						ShowUserInfoUI showUserInfoUI = new ShowUserInfoUI(user);
+	    						showUserInfoUI.showShowUserInfoUI();
+	    					} else {
+	    						ShowQunInfoUI showQunInfoUI = new ShowQunInfoUI(group);
+	    						showQunInfoUI.showQunInfoUI();
+	    					}
 	    				}
 	    			}
-	    		}
-	    	});
+	    		});
+	    	} else {
+	    		headImageLabel.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
+	    	}
 	    	
 	        return headImageLabel;
 	    }
@@ -331,6 +378,11 @@ public class SearchUI {
 	        return IDLabel;
 	    }
 	    
+	    /***
+	     * 查询对象不存在
+	     * 默认为“用户不存在”
+	     * @return
+	     */
 	    private JLabel getNoFoundLabel() {
 	    	if(noFoundLabel == null) {
 	    		noFoundLabel = new JLabel("您查找的用户不存在");
@@ -342,6 +394,10 @@ public class SearchUI {
 	        return noFoundLabel;
 	    }
 	    
+	    /***
+	     * 显示查询结果
+	     * @param obj
+	     */
 	    public void showFindResult(Object obj) {
 	    	if(obj == null) {
 	    		getNoFoundLabel().setVisible(true);
@@ -371,6 +427,10 @@ public class SearchUI {
 	 
 	    }
 	    
+	    /***
+	     * 返回要查询的对象
+	     * @return
+	     */
 	    public Object getSearchObj() {
 	    	if(isUser) {
 	    		User u = new User();
@@ -383,6 +443,11 @@ public class SearchUI {
 	    	}
 	    } 
 	    
+	    /***
+	     * 
+	     * 返回要添加的对象
+	     * @return
+	     */
 	    public Object getAddObj() {
 	    	if(isUser)
 	    		return user;
@@ -390,13 +455,20 @@ public class SearchUI {
 	    		return group;
 	    }
 	    
-	    public void showAddMessage() {
+	    /***
+	     * 成功发出添加请求
+	     */
+	     public void showAddMessage() {
 	    	if(isUser)
 	    		JOptionPane.showMessageDialog(null, "您的请求已经发送过去，正待等待对方回复", "添加好友", JOptionPane.DEFAULT_OPTION);
 	    	else 
 	    		JOptionPane.showMessageDialog(null, "您的请求已经发送过去，正待等待群主回复", "加入群", JOptionPane.DEFAULT_OPTION);
 	    }
 	    
+	    /***
+	     * 不能重复添加
+	     * @param id
+	     */
 	    public void showRepeatAddMessage(int id) {
 	    	if(isUser)
 	    		JOptionPane.showMessageDialog(null, "您与 " + id + " 已是好友\n不能重复添加", "重复添加", JOptionPane.DEFAULT_OPTION);

@@ -4,14 +4,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -25,32 +23,30 @@ import javax.swing.border.LineBorder;
 
 import qin.model.Resource;
 
-
-
-
-public class LoginUI { //implements ActionListener {
-    
+/***
+ * 登录界面
+ */
+public class LoginUI {
 	int width = 260;
 	int height = 320;
 	String logoPath = Resource.LogoPath;
 	
     private JFrame jFrame = null;			
     private JPanel jContentPane = null;  
-    
     private JTextField IDField = null;	  	
     private JPasswordField PasswordField = null;  
-
     private JButton loginButton = null;			
     private JButton regeditButton = null;  		
   
     public LoginUI() {
     	initJFrame();
-    	
     }
     
-    
-    private JFrame initJFrame() {
-    	
+    /***
+     * 获取登录窗口 
+     * @return
+     */
+    private JFrame initJFrame() {	
         if (jFrame == null) {
             jFrame = new JFrame();
             jFrame.setTitle("Qin");
@@ -61,8 +57,7 @@ public class LoginUI { //implements ActionListener {
             Dimension screen = toolkit.getScreenSize();
             jFrame.setBounds(screen.width/2 - width/2, screen.height/2 - height/2, width, height);  //让窗体在屏幕正中央显示
             
-            jFrame.setContentPane(getJContentPane());
-            
+            jFrame.setContentPane(getJContentPane());  
             jFrame.setVisible(false);
             
             // 添加窗口时间监听
@@ -79,20 +74,19 @@ public class LoginUI { //implements ActionListener {
         return jFrame; 
     }
 
-    
+    /***
+     * 获取登录UI画版
+     * @return
+     */
     private JPanel getJContentPane() {
         if (jContentPane == null) {
             jContentPane = new JPanel();
             jContentPane.setLayout(null);
-            
             jContentPane.add(getLogo());
-     
             jContentPane.add(getIDTipLable());
             jContentPane.add(getIDField());
-            
             jContentPane.add(getPasswordTipLable());
             jContentPane.add(getPasswordField());
-            
             jContentPane.add(getLoginButton());
             jContentPane.add(getRegeditButton());
         }
@@ -100,33 +94,47 @@ public class LoginUI { //implements ActionListener {
         return jContentPane;
     }
 
+    /***
+     * 显示logo
+     * @return
+     */
     private JLabel getLogo() {
     	JLabel logo=new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(logoPath))));
     	logo.setBounds(new Rectangle(width/5, height/50, width*2/3,width*2/3));
-        
         return logo;
     }
     
     private JLabel getIDTipLable() {
     	JLabel IDTipLabel = new JLabel("帐号: ");
     	IDTipLabel.setBounds(new Rectangle(width/8, height*15/30, width/4,height/10));
-    
     	return IDTipLabel;
     }
   
     private JLabel getPasswordTipLable() {
     	JLabel PasswordTipLabel = new JLabel("密码: ");
     	PasswordTipLabel.setBounds(new Rectangle(width/8, height*19/30, width/4,height/10));
-    
     	return PasswordTipLabel;
     }
  
+    /***
+     * 获取帐号输入框
+     * @return
+     */
     public JTextField getIDField() {
         if (IDField == null) {
-        	
         	IDField = new JTextField();
         	IDField.setBorder(new LineBorder(Color.black, 1, true));
         	IDField.setBounds(new Rectangle(width*2/8, height*15/30, width*3/5,height/10));
+        	
+        	// 设置输入帐号长度
+        	IDField.addKeyListener(new KeyAdapter(){
+				public void keyTyped(KeyEvent e) {
+					int keyChar = e.getKeyChar();				
+					if(keyChar < KeyEvent.VK_0 || keyChar > KeyEvent.VK_9 || IDField.getText().length() >= 9) {
+						e.consume(); //关键，屏蔽掉非法输入
+					}
+				}
+        	});
         }
         
         return IDField;
@@ -137,6 +145,14 @@ public class LoginUI { //implements ActionListener {
             PasswordField = new JPasswordField();
             PasswordField.setBorder(new LineBorder(Color.black, 1, true));
             PasswordField.setBounds(new Rectangle(width*2/8, height*19/30, width*3/5,height/10));
+            
+            PasswordField.addKeyListener(new KeyAdapter(){
+    				public void keyTyped(KeyEvent e) {			
+    					if(PasswordField.getText().length() >= 9) {
+    						e.consume(); //关键，屏蔽掉非法输入
+    					}
+    				}
+            	});
         }
         
         return PasswordField;

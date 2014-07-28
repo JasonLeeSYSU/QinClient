@@ -3,7 +3,6 @@ package qin.ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,16 +10,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -33,16 +26,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-import qin.controller.QinUIController;
 import qin.controller.handelThread.BusinessOperationHandel;
 import qin.controller.handelThread.SendFileThread;
 import qin.model.Resource;
 import qin.model.domainClass.Qun;
-import qin.model.domainClass.Message;
 import qin.model.domainClass.User;
 
 public class MessageUI {
-	
 	private int MessageUIWidth = Resource.MessageUIWidth;
 	private int MessageUIHeight = Resource.MessageUIHeight;
 	
@@ -55,19 +45,20 @@ public class MessageUI {
 	private JTextArea inputTextArea = null;
 	private JTextArea showMessageTextArea = null;
 	private JLabel ImageLabel = null;
-	
 	private JButton sendButton = null;
 	private JButton giveUpButton = null;
 	private JLabel SendFileLabel = null;
-	
 	private JButton agreeReceiveButton = null;
 	private JButton refuseReceiveButton = null;
 	private JProgressBar progressBar = null;
 	
+	/***
+	 * 创建信息界面
+	 * @param obj
+	 * @param sourceID
+	 */
 	public MessageUI(Object obj, int sourceID) {
-		
 		this.sourceID = sourceID;
-		
 		if(obj instanceof User) {
 			isUserMessage = true;
 			user = (User)obj;
@@ -77,15 +68,25 @@ public class MessageUI {
 		}
 	}
 	
+	/***
+	 * 显示消息界面
+	 */
 	public void showMessageUI() {
 		getjFrame().setVisible(true);
 	}
 	
-	
+	/***
+	 * 隐藏信息界面
+	 */
 	public void hideMessageUI() {
 		getjFrame().setVisible(false);
 	}
     
+	/***
+	 * 返回接收方的对象
+	 * 可以返回User 或者 Qun
+	 * @return
+	 */
 	public Object getObject() {
 		if(isUserMessage)
 			return user;
@@ -93,18 +94,22 @@ public class MessageUI {
 			return group;
 	}
 	
+	/***
+	 * 返回接收方ID
+	 * 可以是群ID或者是用户ID
+	 * @return
+	 */
 	public int getObjectID() {
 		if(isUserMessage)
-				return user.getUid();
+			return user.getUid();
 		else 
-				return group.getQunID();
+			return group.getQunID();
 	}
 	
     /**
      * 初始化窗体
      */
     private JFrame getjFrame() {
-    	
         if (jFrame == null) {
             jFrame = new JFrame("Qin聊天");
             jFrame.setResizable(false);
@@ -119,6 +124,7 @@ public class MessageUI {
             jFrame.add(getJPanel());
             jFrame.setVisible(false);
             
+            // 点击关闭聊天窗口，实际是隐藏窗口
             jFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
@@ -130,8 +136,7 @@ public class MessageUI {
         return jFrame;
     }
     
-    
-
+  
     /**
      * 初始化 jPanel
      */
@@ -142,10 +147,9 @@ public class MessageUI {
         
         String ImagePath = isUserMessage ? ((user.isUserOnline() ? Resource.OnLineHeadImagePath : Resource.OffLineHeadImagePath) + user.getHeadImage()) : Resource.QunLogo;
         jPanel.add(setAndGetHeadImageLabel(ImagePath ));
-        
+      
         jPanel.add(getNameLabel());
         jPanel.add(getIDLabel());
-        
         jPanel.add(getAgreeReceiveButton());
         jPanel.add(getRefuseReceiveButton());
         jPanel.add(getProgressBar());
@@ -154,21 +158,25 @@ public class MessageUI {
         	jPanel.add(getSendFileLabel());
         
        jPanel.add(getShowMessageTextAreaScrollPane());
-        
        jPanel.add(getInputTextAreaScrollPane());
-        
        jPanel.add(getSendButton());
        jPanel.add(getGiveUpButton());
        
         return jPanel;
     }
 	
-    
+    /***
+     * 设置聊天界面的头像
+     * 用户头像或者群头像
+     * @param ImagePath
+     * @return
+     */
     private JLabel setAndGetHeadImageLabel(String ImagePath) {
     	if(ImageLabel == null) {
     		ImageLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
     		ImageLabel.setBounds(new Rectangle(20, 10, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
     	
+    		// 点击头像，弹出用户或者群的详细信息
     		ImageLabel.addMouseListener(new MouseAdapter() {
     			@Override
     			public void mouseClicked(MouseEvent e) {
@@ -192,9 +200,12 @@ public class MessageUI {
     	return ImageLabel;
     }
     
+    /***
+     * 接收方的名称
+     * @return
+     */
     private JLabel getNameLabel() {
         String Name = isUserMessage ? user.getNickName() : group.getQunName();
-        System.out.println(Name);
         
        	JLabel NameLabel = new JLabel();
     	NameLabel.setBounds(new Rectangle(20+Resource.HeadImaageWidth+10, 10, 200, 20));
@@ -204,11 +215,13 @@ public class MessageUI {
       	return NameLabel;
     }
     
-    
+    /***
+     * 接收方的ID
+     * @return
+     */
     private JLabel getIDLabel() {
         String ID = isUserMessage ? user.getUid() + "" : group.getQunID() + "";
-        System.out.println(ID);
-        
+
        	JLabel IDLabel = new JLabel();
     	IDLabel.setBounds(new Rectangle(20+Resource.HeadImaageWidth+10, 30, 200, 20));
     	IDLabel.setForeground(Color.BLACK);
@@ -217,10 +230,14 @@ public class MessageUI {
       	return IDLabel;
     }
     
+    /***
+     * 发送文件图标
+     * 只有在在线好友之间才能发送文件
+     * @return
+     */
     public JLabel getSendFileLabel() {
     	if(SendFileLabel == null) {
     		String SendFileImagePath = Resource.SendFilePicture;
-    	
     		SendFileLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(SendFileImagePath))));
     		SendFileLabel.setBounds(new Rectangle(Resource.MessageUIWidth - 2*Resource.HeadImaageWidth, 10, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
     	
@@ -230,9 +247,8 @@ public class MessageUI {
     				if (e.getClickCount() == 2) {
     					String fileName = showSendFileChooser();
     					
-    					if(fileName != null) {	
+    					if(fileName != null) { // 已经选择文件
     						File file = new File(fileName);
-    						
     						if(file.isFile()) {
     							Thread sendFileThread = new Thread(new SendFileThread(sourceID, getObjectID(), fileName));
     							sendFileThread.start();
@@ -249,7 +265,10 @@ public class MessageUI {
     	return SendFileLabel;
     }
     
-    
+    /***
+     * 文件接收方的“接收”按钮
+     * @return
+     */
 	public JButton getAgreeReceiveButton() {
 		if(agreeReceiveButton == null) {
 			agreeReceiveButton = new JButton("接收");
@@ -260,30 +279,39 @@ public class MessageUI {
 		return agreeReceiveButton;
 	}
 	
+	 /***
+	  * 文件接收方的“拒绝”按钮
+	  * @return
+	  */
 	public JButton getRefuseReceiveButton() {
 		if(refuseReceiveButton == null) {
 			refuseReceiveButton = new JButton("拒绝");
 			refuseReceiveButton.setBounds(new Rectangle(Resource.HeadImaageWidth*15/2+30, 10, Resource.HeadImaageWidth+20, Resource.HeadImaageHeight-5));
 			refuseReceiveButton.setVisible(false);
 		}
-		
 		return refuseReceiveButton;
 	}
 	
-	
+	/***
+	 * 文件传输进度条
+	 * @return
+	 */
     public JProgressBar getProgressBar() {
     	if(progressBar == null) {
     		progressBar = new JProgressBar(0, 100);
     		progressBar.setValue(0);
     		progressBar.setStringPainted(true);
     		progressBar.setBounds(new Rectangle(4*Resource.HeadImaageWidth, 10, Resource.HeadImaageWidth*5/2, Resource.HeadImaageHeight));
-    	
     		progressBar.setVisible(false);
     	}
     	
     	return progressBar;
     }
     
+    /***
+     * 聊天信息展示框的滑动条
+     * @return
+     */
     private JScrollPane getShowMessageTextAreaScrollPane() {
         JScrollPane  jScrollPane = new JScrollPane();
         jScrollPane.setBounds(0, Resource.MessageUIHeight*1/8 , Resource.MessageUIWidth-7, Resource.MessageUIHeight*8/15 + 12);
@@ -293,6 +321,10 @@ public class MessageUI {
         return jScrollPane;
     }
     
+    /***
+     * 聊天信息展示框
+     * @return
+     */
     public JTextArea getShowMessageTextArea() {
         if (showMessageTextArea == null) {
         	showMessageTextArea = new JTextArea();
@@ -304,7 +336,10 @@ public class MessageUI {
         return showMessageTextArea;
     }
     
-    
+    /***
+     * 聊天信息输入框的滑动条
+     * @return
+     */
     private JScrollPane getInputTextAreaScrollPane() {
         JScrollPane  jScrollPane = new JScrollPane();
         jScrollPane.setBounds(25, Resource.MessageUIHeight*7/10, Resource.MessageUIWidth-50, Resource.MessageUIHeight/6);
@@ -314,8 +349,11 @@ public class MessageUI {
         return jScrollPane;
     }
     
+    /***
+     * 聊天信息输入框
+     * @return
+     */
     public JTextArea getInputTextArea() {
-    	
         if (inputTextArea == null) {
         	inputTextArea = new JTextArea();
         	inputTextArea.setFocusCycleRoot(true);
@@ -351,18 +389,21 @@ public class MessageUI {
          			}
          		}
          	});
-    	
         }
         
         return inputTextArea;
     }
     
-    
+    /***
+     * 为“发送”按钮添加监听事件
+     * @return
+     */
     public JButton getSendButton() {
     	if(sendButton == null) {
     		sendButton = new JButton("发送");
     		sendButton.setBounds(new Rectangle(MessageUIWidth*5/15, MessageUIHeight*13/15+3, 60, 33));
     		
+    		// 聊天信息非空才能发送
     		sendButton.addMouseListener(new MouseAdapter() {
     			public void mouseEntered(MouseEvent e) {
     				if(getInputTextArea().getText().trim().length() == 0)
@@ -373,10 +414,10 @@ public class MessageUI {
     			}	
     		});
     		
+    		// 按“发送”按钮发送聊天信息
     		sendButton.addActionListener(new ActionListener() {
     			@Override
     			public void actionPerformed(ActionEvent e) {
-    			
     					String msg = getInputTextArea().getText();
     					
     					if(msg.trim().length() > 0) {
@@ -384,7 +425,6 @@ public class MessageUI {
     						getShowMessageTextArea().setText(getShowMessageTextArea().getText() + "我  " + time  + "\n" + msg + "\n\n");
     						getInputTextArea().setText("");	
     					
-           					
          					int destinationId = getObjectID();
          					String detail = msg;
          					boolean isQunMsg = !isUserMessage;
@@ -392,19 +432,20 @@ public class MessageUI {
     					}
     			}
     		});
-    		
     	}
-    	
     	return sendButton;
     }
     
+    /***
+     * 清空输入框中的内容
+     * @return
+     */
     private JButton getGiveUpButton() {
     	if(giveUpButton == null) {
-    		giveUpButton = new JButton("取消");
+    		giveUpButton = new JButton("清空");
     		giveUpButton.setBounds(new Rectangle(MessageUIWidth*8/15, MessageUIHeight*13/15+3, 60, 33));
     		
     		giveUpButton.addActionListener(new ActionListener() {
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					getInputTextArea().setText("");
@@ -412,10 +453,13 @@ public class MessageUI {
     			
     		});
     	}
-    	
     	return giveUpButton;
     }
     
+    /***
+     * 选择要发送的文件
+     * @return
+     */
     public String showSendFileChooser() {
 		JFileChooser Dialog = new JFileChooser();
 		Dialog.setDialogTitle("请选择文件");
@@ -429,14 +473,27 @@ public class MessageUI {
 		}
     }
     
+    /***
+     * 选择接收文件的存放路径
+     * @return
+     */
     public String showSaveFileChooser() {
-    	JFileChooser saveFileChooser = new JFileChooser();
-    	saveFileChooser.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY); 
-    	saveFileChooser.showDialog(null,null);  
+    	String folder = null;
+    	do {
+    		JFileChooser saveFileChooser = new JFileChooser("选择存放的文件夹");
+    		saveFileChooser.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY); 
+    		saveFileChooser.showDialog(null,null);  
+    		
+    		if(saveFileChooser.getSelectedFile() == null || saveFileChooser.getSelectedFile().isDirectory()) {
+    			folder = saveFileChooser.getSelectedFile() + "";
+    			System.out.println("文件夹路径： " + saveFileChooser.getSelectedFile());
+    			break;
+    		}  else {
+    			JOptionPane.showMessageDialog(null, saveFileChooser.getSelectedFile() + " 不是一个文件夹", "文件夹路径错误", JOptionPane.DEFAULT_OPTION);
+    		}
+    	} while(true);
     	
-    	return  saveFileChooser.getSelectedFile()+""; 
-    	
-    	
+    	return folder; 
     }
     
     /***
@@ -463,6 +520,7 @@ public class MessageUI {
        	String msg = "\t发送文件:已经成功发送文件\n\n";
     	getShowMessageTextArea().setText(getShowMessageTextArea().getText() + msg);
     }
+    
     /***
      * 更改UI
      * 发送方被拒绝发送文件
@@ -487,9 +545,6 @@ public class MessageUI {
     	getShowMessageTextArea().setText(getShowMessageTextArea().getText() + msg);
     }
     
-    
-    
-    
     /***
      * 更改UI
      * 接收方等待接收
@@ -509,7 +564,7 @@ public class MessageUI {
     }
     
     /*** 
-     * 更给UI
+     * 更改UI
      * 接收方正在接收文件
      */
     public void ReceivingFile() {
@@ -523,7 +578,7 @@ public class MessageUI {
     }
     
     /*** 
-     * 更给UI
+     * 更改UI
      * 接收方接收文件完毕
      */
     public void finishReceive() {
@@ -537,25 +592,8 @@ public class MessageUI {
     	getShowMessageTextArea().setText(getShowMessageTextArea().getText() + msg);
     }
     
-    public void UserLogoutUI() {
-    	if(isUserMessage) {
-    		getSendFileLabel().setVisible(false);
-    		String ImagePath = Resource.OffLineHeadImagePath + user.getHeadImage();
-    		setAndGetHeadImageLabel(ImagePath);
-    	}
-    }
-    
-    public void UserLoginUI() {
-    	if(isUserMessage) {
-    		getSendFileLabel().setVisible(true);
-    		String ImagePath = Resource.OnLineHeadImagePath + user.getHeadImage();
-    		setAndGetHeadImageLabel(ImagePath);
-    	}	
-    }
-    
-    
     /*** 
-     * 更给UI
+     * 更改UI
      * 接收方拒绝接收文件
      */
     public void refuseReceive() {
@@ -569,6 +607,35 @@ public class MessageUI {
     	getShowMessageTextArea().setText(getShowMessageTextArea().getText() + msg);
     }
     
+    /***
+     * 当前对话用户下线
+     * 隐藏发送文件图标和文件传输进度条
+     */
+    public void UserLogoutUI() {
+    	if(isUserMessage) {
+    		getSendFileLabel().setVisible(false);
+    		getProgressBar().setVisible(false);
+    		String ImagePath = Resource.OffLineHeadImagePath + user.getHeadImage();
+    		setAndGetHeadImageLabel(ImagePath);
+    	}
+    }
+    
+    /***
+     * 当前对话用户上线
+     * 可以传输文件
+     * 头像变亮
+     */
+    public void UserLoginUI() {
+    	if(isUserMessage) {
+    		getSendFileLabel().setVisible(true);
+    		String ImagePath = Resource.OnLineHeadImagePath + user.getHeadImage();
+    		setAndGetHeadImageLabel(ImagePath);
+    	}	
+    }
+    
+    /***
+     * 提示传输了不支持的文件
+     */
     public void sendNoSupportFile() {
     	JOptionPane.showMessageDialog(null, "暂时不支持您要传输的文件类型，请选择其他文件", "文件传输失败", JOptionPane.DEFAULT_OPTION);
     }

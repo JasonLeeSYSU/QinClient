@@ -12,10 +12,13 @@ import qin.model.Resource;
 import qin.model.domainClass.Qun;
 import qin.model.domainClass.User;
 
-
-
-
+/***
+ * 定义一种可以显示图片和说明的Tree布局
+ */
 class JTreeCellRenderer extends DefaultTreeCellRenderer {
+
+	private static final long serialVersionUID = -6185174216480299987L;
+
 	public JTreeCellRenderer() {
     	
     }

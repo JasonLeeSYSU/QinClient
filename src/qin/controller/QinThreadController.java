@@ -15,6 +15,10 @@ import qin.model.QinMessagePacket;
 import qin.model.msgContainer.AddFriendContainer;
 import qin.model.msgContainer.JoinQunContainer;
 
+/***
+ * 监听端口
+ * 接收从服务器主动传过来的信息包
+ */
 public class QinThreadController implements Runnable {
 	private ServerSocket clientListenerSocket;
 	
@@ -42,7 +46,6 @@ public class QinThreadController implements Runnable {
 				QinMessagePacket packet = (QinMessagePacket) in.readObject();
 				
 				System.out.println("Order come: " + packet.getCommand());
-				
 				if(packet.getCommand().equals(Command.RECEIVEPRIVATEMSG)) {
 					 // 接收到好友信息
 					Thread receivePrivateMessageThread = new Thread(new ReceiveMessageThread(packet.getMessageContainer().getMessage(), true));

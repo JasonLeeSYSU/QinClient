@@ -7,7 +7,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-@SuppressWarnings("serial")
+/***
+ * 定义一种可以显示图片的下拉菜单布局
+ */
+@SuppressWarnings({ "serial", "rawtypes" })
 public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
         private Font uhOhFont;
 
@@ -27,18 +30,17 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
             }
 
             ImageIcon icon = (ImageIcon) value;
-            String description = icon.getDescription();
             setIcon(icon);
-            
-            if (icon != null) {
-                //setText(description);
-               //(list.getFont());
-            } 
           
             return this;
         }
 
-        //Set the font and text when no image was found.
+        /***
+         * Set the font and text when no image was found.
+         * @param uhOhText
+         * @param normalFont
+         */
+        
         protected void setUhOhText(String uhOhText, Font normalFont) {
             if (uhOhFont == null) { 
                 uhOhFont = normalFont.deriveFont(Font.ITALIC);

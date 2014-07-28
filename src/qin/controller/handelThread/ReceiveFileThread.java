@@ -63,10 +63,8 @@ public class ReceiveFileThread implements Runnable, PropertyChangeListener {
 	 */
 	private void waitForReceiverOperate() {
 		messageUI.waitForReceiveFile(); // 更改UI
-		
 	    messageUI.getAgreeReceiveButton().addActionListener(getAgreeActionListener());
 		messageUI.getRefuseReceiveButton().addActionListener(getRefuseActionListener());
-		
 		messageUI.showMessageUI();
 	}
 	
@@ -166,7 +164,6 @@ public class ReceiveFileThread implements Runnable, PropertyChangeListener {
 	
 	/***
 	 * 接收文件任务
-	 * @author imac06
 	 *
 	 */
 	class ReceiveFileTask extends SwingWorker<Void, Void> {
@@ -189,19 +186,19 @@ public class ReceiveFileThread implements Runnable, PropertyChangeListener {
 			 int len;
 	         byte[] bytes = new byte[128];
 			 DataInputStream inStream = new DataInputStream(socket.getInputStream());
-			 OutputStream outStream = new FileOutputStream(new File(fileName));
+			 @SuppressWarnings("resource")
+			OutputStream outStream = new FileOutputStream(new File(fileName));
 			 
+			 // 接收字符串
 	         while ((len = inStream.read(bytes)) != -1) {
 	        	 outStream.write(bytes, 0, len); 
 	        	 hadReceiveSize += len;
-	        	 
 	             progress = (int)(100 * hadReceiveSize/totalSize);
 	             setProgress(Math.min(progress, 100));
 	         }
 			
 	         // 更改UI
 	         messageUI.finishReceive(); 
-	         
 	         socket.close();
 	         
 			return null;
@@ -209,6 +206,9 @@ public class ReceiveFileThread implements Runnable, PropertyChangeListener {
 	 }
 
 
+	/***
+	 * 设置文件传输进度条
+	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		 if ("progress" == evt.getPropertyName()) {

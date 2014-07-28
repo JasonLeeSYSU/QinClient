@@ -1,5 +1,6 @@
 package qin.controller.handelThread;
 
+import java.io.IOException;
 import java.util.List;
 
 import qin.controller.QinUIController;
@@ -31,21 +32,44 @@ public class ReceiveMessageThread implements Runnable{
 			msg = ((User)(messageUI.getObject())).getNickName() + " ";
 			
 		} else {
-			System.out.println("发送群信息的ID ： " + message.getQunId());
+			System.out.println("发送群信息： " + message.getSourceId() + "用户 --> 群" + message.getDestinationId());
 			messageUI = QinUIController.getInstance().getQunMessageUIByID(message.getDestinationId());
 			if(messageUI == null) {
 				System.out.println("找不到 目的主 的 Quns MeaageUI");
 				return ;
 			}
+			
 			List<User> qunUser = ((Qun)(messageUI.getObject())).getQunMember();
 			
-			String username = "匿名者 ";
+			// 在本地的群成员中查找用户的昵称
+			String username = "";
 			for(int i = 0; i < qunUser.size(); i++) {
 				if(qunUser.get(i).getUid() == message.getSourceId()) {
 					username = qunUser.get(i).getNickName() + "<" + message.getSourceId() + "> ";
 					break;
 				}
 			}
+			
+			if(username.equals("")) { // 本地群成员中找不到用户的
+				try {
+					Qun tempQun = BusinessOperationHandel.findQun(message.getDestinationId(), true);
+					
+					for(int i = 0; i < tempQun.getQunMember().size(); i++) {
+						if(tempQun.getQunMember().get(i).getUid() == message.getSourceId()) {
+							username = tempQun.getQunMember().get(i).getNickName() + "<" + message.getSourceId() + "> ";
+							qunUser.add(tempQun.getQunMember().get(i));
+							break;
+						}
+					}
+					
+					if(username.equals("")) 
+						username = "匿名者<" + message.getSourceId() + ">";
+				} catch (ClassNotFoundException | IOException e) {
+					//e.printStackTrace();
+				}
+				
+			}
+			
 			msg = username;
 		}
 		
