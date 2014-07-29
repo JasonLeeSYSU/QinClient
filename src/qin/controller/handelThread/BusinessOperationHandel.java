@@ -1,11 +1,10 @@
 package qin.controller.handelThread;
 
 import java.io.*;
-import java.net.Inet4Address;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 
+
+import qin.controller.QinUIController;
 import qin.controller.handelThread.basicOperation.MessagePacketSender;
 import qin.model.*;
 import qin.model.domainClass.*;
@@ -50,11 +49,9 @@ public class BusinessOperationHandel {
 				userId = (Integer.valueOf(registerResultPacket.getResponseMsg())).intValue();
 			}
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return userId;
 	}
@@ -88,16 +85,12 @@ public class BusinessOperationHandel {
 			
 			messagePacket.setLoginContainer(loginContainer);
 			
-			System.out.println("等待login结果包！");
 			loginResultPacket = MessagePacketSender.sendPacket(messagePacket);
-			System.out.println("返回login结果包！");
 			
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		return loginResultPacket;
@@ -119,7 +112,7 @@ public class BusinessOperationHandel {
 			
 			messagePacket.setLogoutContainer(logoutContainer);
 			
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -127,8 +120,7 @@ public class BusinessOperationHandel {
 			
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -158,7 +150,7 @@ public class BusinessOperationHandel {
 		messagePacket.setMessageContainer(messageContainer);
 
 		try {
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -166,8 +158,7 @@ public class BusinessOperationHandel {
 			
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -197,11 +188,9 @@ public class BusinessOperationHandel {
 				userResult = findUserResultPacket.getFindUserContainer().getUser();
 			}
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return userResult;
 	}
@@ -212,7 +201,7 @@ public class BusinessOperationHandel {
 			AddFriendContainer addFriendContainer = new AddFriendContainer(sourceId, friendId);
 			messagePacket.setAddFriendContainer(addFriendContainer);
 
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -220,8 +209,7 @@ public class BusinessOperationHandel {
 			
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -231,7 +219,7 @@ public class BusinessOperationHandel {
 			DeleteFriendContainer deleteFriendContainer = new DeleteFriendContainer(sourceId, friendId);
 			messagePacket.setDeleteFriendContainer(deleteFriendContainer);
 
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -239,8 +227,7 @@ public class BusinessOperationHandel {
 			
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -271,11 +258,9 @@ public class BusinessOperationHandel {
 				qunResult = findQunResultPacket.getFindQunContainer().getQun();
 			}
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return qunResult;
 	}
@@ -305,17 +290,15 @@ public class BusinessOperationHandel {
 			messagePacket.setCreateQunContainer(createQunContainer);
 			QinMessagePacket createQunResultPacket = MessagePacketSender.sendPacket(messagePacket);
 			
-			System.out.println(createQunResultPacket.getCommand());
+			//System.out.println(createQunResultPacket.getCommand());
 			
 			if(createQunResultPacket.getCommand().equals(Command.CREATEQUNSUCCESS)) {
 				qunId = (Integer.valueOf(createQunResultPacket.getResponseMsg())).intValue();
 			}
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return qunId;
 	}
@@ -326,7 +309,7 @@ public class BusinessOperationHandel {
 			JoinQunContainer joinQunContainer = new JoinQunContainer(userId, qunId);
 			messagePacket.setJoinQunContainer(joinQunContainer);
 
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -335,7 +318,7 @@ public class BusinessOperationHandel {
 			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -345,7 +328,7 @@ public class BusinessOperationHandel {
 			ExitQunContainer exitQunContainer = new ExitQunContainer(userId, qunId);
 			messagePacket.setExitQunContainer(exitQunContainer);
 
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -364,7 +347,7 @@ public class BusinessOperationHandel {
 			ModifyUserInfoContainer modifyUserInfoContainer = new ModifyUserInfoContainer(user);
 			messagePacket.setModifyUserInfoContainer(modifyUserInfoContainer);
 
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -373,7 +356,7 @@ public class BusinessOperationHandel {
 			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -383,7 +366,7 @@ public class BusinessOperationHandel {
 			ModifyQunInfoContainer modifyQunInfoContainer = new ModifyQunInfoContainer(qun);
 			messagePacket.setModifyQunInfoContainer(modifyQunInfoContainer);
 
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -392,7 +375,7 @@ public class BusinessOperationHandel {
 			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -411,7 +394,7 @@ public class BusinessOperationHandel {
 			}
 			messagePacket.setAddFriendContainer(afc);
 
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -420,14 +403,14 @@ public class BusinessOperationHandel {
 			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
 	// the first parameter is the id of the user who want to join a QUN
 	// the second parameter is the id of the QUN
 	// the third parameter is a boolean value:
-//	         the true value represents 'agree' and the false value represents 'disagree' 
+	// the true value represents 'agree' and the false value represents 'disagree' 
 	public static void respondJoinQunApplication(int sourceId, int qunId, boolean ifAgree) {
 		try {
 			QinMessagePacket messagePacket = new QinMessagePacket(Command.RESPONDJOINQUNAPPLICATION);
@@ -439,7 +422,7 @@ public class BusinessOperationHandel {
 			}
 			messagePacket.setJoinQunContainer(jqc);
 
-			Socket socket = new Socket(Resource.ServerIP, Resource.ServerPort);
+			Socket socket = new Socket(QinUIController.getInstance().getServerIP(), Resource.ServerPort);
 				
 			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			out.writeObject(messagePacket);
@@ -448,7 +431,7 @@ public class BusinessOperationHandel {
 			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 }

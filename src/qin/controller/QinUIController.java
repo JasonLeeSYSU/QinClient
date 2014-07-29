@@ -4,6 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +44,7 @@ import qin.ui.ShowUserInfoUI;
 public class QinUIController implements Runnable  {
 	private static QinUIController SingleUIController = null;
 	private static int ClientListenerPort = -1;
+	private static String ServerIP = null;
 	
 	private User user = null;
 	private List<User> onlineFriends = new ArrayList<User>();
@@ -82,6 +88,12 @@ public class QinUIController implements Runnable  {
 	@Override
 	public void run() {
 		getLoginUI().showLoginUI();
+		
+		ServerIP = loadServerIP();
+		if(ServerIP == null) {
+			setServerIP(false);
+		}
+		
 	}
 	
 	/***
@@ -162,19 +174,18 @@ public class QinUIController implements Runnable  {
 						int loginID = new Integer(loginUI.getIDField().getText());
 						String password = getMD5(loginUI.getPasswordField().getText());
 						
-						// 启动心跳进程
-						heartBeatThread = new HeartBeatThread(loginID);
-						heartBeatThread.start();
-						
 						try {
 							QinMessagePacket loginResultPacket = BusinessOperationHandel.login(loginID, password, ClientListenerPort);
 							
 							if(loginResultPacket == null) { 
 								// 网络异常
-								heartBeatThread.stop();
 								loginUI.showNetWorkErrorMessage(); 
 								
 							} else if(loginResultPacket.getCommand().equals(Command.LOGINSUCCESS)) { 
+								// 启动心跳进程
+								heartBeatThread = new HeartBeatThread(loginID);
+								heartBeatThread.start();
+								
 								// 成功登录
 								user = loginResultPacket.getLoginContainer().getUser();
 								quns = loginResultPacket.getQunListContainer().getQunList();
@@ -215,18 +226,17 @@ public class QinUIController implements Runnable  {
 								}
 								
 								// 处理加入群的请求、结果
-								System.out.println("joinQunListContainers 大小： " + joinQunListContainers.size());
 								for(int i = 0; i < joinQunListContainers.size(); i++) {
 									if(joinQunListContainers.get(i).getState() == JoinQunContainer.CHECKED) {
 										 int sourceID = joinQunListContainers.get(i).getUserId();
 										 int addedQunID = joinQunListContainers.get(i).getQunId();
-										 System.out.println("有人想加入我的群： " + sourceID + " want to join " + addedQunID);
+										
 										 Thread receiveJoinQunApplicationThread = new Thread(new ReceiveApplicationThread(sourceID, addedQunID));
 										 receiveJoinQunApplicationThread.start();
 									} else {
 										 int addedQunID = joinQunListContainers.get(i).getQunId();
 										 boolean isAdded = joinQunListContainers.get(i).getState() == JoinQunContainer.PASSED;
-										 System.out.println("用户" + joinQunListContainers.get(i).getUserId() + " 被同意/拒绝加入他人的群： " + " to Qun " + addedQunID);
+										 
 										Thread receiveJoinQunResponseThread = new Thread(new ReceiveApplicationResponseThread(false, addedQunID, isAdded));
 										receiveJoinQunResponseThread.start();
 									}
@@ -238,9 +248,7 @@ public class QinUIController implements Runnable  {
 									Message message =  offLineMsg.get(i);
 									String msg = "";
 									
-									if(message.isQunMsg()) {
-										System.out.println("离线群信息 coming");
-										
+									if(message.isQunMsg()) {	
 										messageUI = getQunMessageUIByID(message.getDestinationId());
 										if(messageUI != null) {
 											List<User> qunUser = ((Qun)(messageUI.getObject())).getQunMember();
@@ -254,7 +262,6 @@ public class QinUIController implements Runnable  {
 											msg = username;
 										} 
 									} else {	
-										System.out.println("离线群信息 coming");
 										messageUI = getPrivateMessageUIByID(message.getSourceId());
 										if(messageUI != null) {
 											msg = ((User)(messageUI.getObject())).getNickName() + " ";
@@ -274,11 +281,11 @@ public class QinUIController implements Runnable  {
 								}
 								
 							} else {
-								heartBeatThread.stop();
 								loginUI.showErrorMessage(loginResultPacket.getResponseMsg());	
 							}
 						} catch (ClassNotFoundException | IOException e1) {
-							heartBeatThread.stop();
+							if(heartBeatThread != null)
+								heartBeatThread.stop();
 							loginUI.showNetWorkErrorMessage();
 						}
 					}
@@ -294,6 +301,15 @@ public class QinUIController implements Runnable  {
 					getRegisterUI().showRegisterUI();
 				}
     		});
+			
+			loginUI.getSettingLogo().addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						setServerIP(true);		
+					}
+				}
+			});
 		} 
 		
 		return loginUI;
@@ -661,14 +677,9 @@ public class QinUIController implements Runnable  {
 			Qun qun = getQunInfoByID(qunID);
 			
 			if(qun == null || sourceUser == null || qun.getQunOwnerID() != user.getUid()) {
-				if(qun == null) System.out.println("群为空");
-				if(sourceUser == null) System.out.println("源用户为空");
-				if(qun.getQunOwnerID() != user.getUid()) System.out.println("群主不是当前用户" + qun.getQunOwnerID() + " VS " + user.getUid());
-				
 				return ;
 			}
 			
-			System.out.println(qun.getQunName() + " " + qun.getQunID() + " " + qun.getQunOwnerID() + " " + qun.getQunDescription());
 			ShowApplicationUI showApplicationUI = new ShowApplicationUI(sourceUser, qun.getQunID(), qun.getQunName());
 			showApplicationUI.getJFrame();	
 		} catch (ClassNotFoundException | IOException e) {
@@ -684,16 +695,14 @@ public class QinUIController implements Runnable  {
 		try {
 			User addedUser = BusinessOperationHandel.findUser(addedId);
 			
-			if(addedUser != null) {
-				System.out.println("showAddFriendApplicationResponse addedUser");
-				
+			if(addedUser != null) {		
 				if(isSuccess)
 					addFriend(addedUser); 
 				
 				ShowApplicationResponseUI showApplicationResponseUI = new ShowApplicationResponseUI(addedUser, user.getUid(), isSuccess);
 				showApplicationResponseUI.getJFrame();
 			} else {
-				System.out.println("showAddFriendApplicationResponse addedUser 不存在");
+				//System.out.println("showAddFriendApplicationResponse addedUser 不存在");
 			}
 		} catch (ClassNotFoundException | IOException e) {
 			//e.printStackTrace();
@@ -721,7 +730,7 @@ public class QinUIController implements Runnable  {
 				ShowApplicationResponseUI showApplicationResponseUI = new ShowApplicationResponseUI(addedQun, user.getUid(), isSuccess);
 				showApplicationResponseUI.getJFrame();
 			} else {
-				System.out.println("showJoinQunApplicationResponse addedQun 不存在");
+				//System.out.println("showJoinQunApplicationResponse addedQun 不存在");
 			}
 		} catch (ClassNotFoundException | IOException e) {
 			//e.printStackTrace();
@@ -815,6 +824,69 @@ public class QinUIController implements Runnable  {
 		}
 	}
 	
+	/***
+	 * 从文件中读出服务器IP地址
+	 * @return
+	 */
+	private String loadServerIP() {
+		String ip = null;
+		File ipFile = new File(".IP.txt");
+		
+		 if(ipFile.isFile() && ipFile.exists()){ //判断文件是否存在
+			 try {
+				@SuppressWarnings("resource")
+				BufferedReader reader = new BufferedReader(new FileReader(ipFile));
+				ip = reader.readLine();
+				reader.close();
+			} catch (IOException e) {
+				
+			}
+		 }
+		 
+		System.out.println("服务器IP地址：" + ip);
+		return ip;
+	}
+	
+	/***
+	 * 把服务器IP地址保存在本地文件中
+	 * @param ip
+	 */
+	private void saveServerIP(String ip) {
+	   
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(".IP.txt", false));
+			writer.write(ip);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			
+		}
+
+	}
+	
+	/***
+	 * 
+	 * @param isCanCancel
+	 */
+	private void setServerIP(boolean isCanCancel) {
+		
+		do {
+			ServerIP = getLoginUI().setServerIP();
+			
+			if(ServerIP == null && isCanCancel)
+				break;
+			else if(ServerIP != null){
+				saveServerIP(ServerIP);
+				break;
+			}
+		} while(true);
+		
+		
+	}
+	
+	public String getServerIP() {
+		return ServerIP;
+	}
 	
 	public void setClientListenerPort(int port) {
 		ClientListenerPort = port;
@@ -844,7 +916,7 @@ public class QinUIController implements Runnable  {
 			  }
 			  s = new String(str);                              
 		   	}  catch( Exception e ) {
-			   e.printStackTrace();
+			 //  e.printStackTrace();
 		   }
 		   return s;
 	}

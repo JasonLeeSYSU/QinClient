@@ -14,7 +14,7 @@ public class Resource {
 	
 	public final static String SendFilePicture = "/qin/picture/SendFilePicture.png";
 	
-	//public final static String SettingPicture = "/qin/picture/SettingPicture.png";
+	public final static String SettingPicture = "/qin/picture/SettingPicture.png";
 	
 	public final static String SearchPicture = "/qin/picture/SearchPicture.png";
 	
@@ -40,7 +40,7 @@ public class Resource {
 	
 	public final static int MessageMaxCharacter = 170;
 	
-	public final static String ServerIP = "172.18.159.201";
+	//public final static String ServerIP = "172.18.159.201";
 	 
 	public final static int ServerPort = 6687;
 	

@@ -100,7 +100,7 @@ public class ReceiveFileThread implements Runnable, PropertyChangeListener {
 							e1.printStackTrace();
 						}
 						messageUI.sendFileError(); // 如果接收文件途中出错，把出错消息显示在UI上。
-						System.out.println(ex.toString());
+
 					}
 					// 取消监听器
 					messageUI.getAgreeReceiveButton().removeActionListener(getAgreeActionListener());
@@ -127,7 +127,6 @@ public class ReceiveFileThread implements Runnable, PropertyChangeListener {
 						messageUI.refuseReceive();
 					} catch (IOException ex) {
 						messageUI.sendFileError();
-						System.out.println(ex.toString());
 					}
 					messageUI.getAgreeReceiveButton().removeActionListener(getAgreeActionListener());
 					messageUI.getRefuseReceiveButton().removeActionListener(getRefuseActionListener());

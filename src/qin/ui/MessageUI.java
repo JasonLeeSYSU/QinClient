@@ -154,7 +154,7 @@ public class MessageUI {
         jPanel.add(getRefuseReceiveButton());
         jPanel.add(getProgressBar());
         
-        if(isUserMessage && user.isUserOnline())
+        if(isUserMessage)
         	jPanel.add(getSendFileLabel());
         
        jPanel.add(getShowMessageTextAreaScrollPane());
@@ -240,7 +240,8 @@ public class MessageUI {
     		String SendFileImagePath = Resource.SendFilePicture;
     		SendFileLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(SendFileImagePath))));
     		SendFileLabel.setBounds(new Rectangle(Resource.MessageUIWidth - 2*Resource.HeadImaageWidth, 10, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
-    	
+    		SendFileLabel.setVisible(user.isUserOnline());
+    		
     		SendFileLabel.addMouseListener(new MouseAdapter() {
     			@Override
     			public void mouseClicked(MouseEvent e) {
@@ -486,7 +487,7 @@ public class MessageUI {
     		
     		if(saveFileChooser.getSelectedFile() == null || saveFileChooser.getSelectedFile().isDirectory()) {
     			folder = saveFileChooser.getSelectedFile() + "";
-    			System.out.println("文件夹路径： " + saveFileChooser.getSelectedFile());
+    			
     			break;
     		}  else {
     			JOptionPane.showMessageDialog(null, saveFileChooser.getSelectedFile() + " 不是一个文件夹", "文件夹路径错误", JOptionPane.DEFAULT_OPTION);
@@ -627,6 +628,7 @@ public class MessageUI {
      */
     public void UserLoginUI() {
     	if(isUserMessage) {
+    		
     		getSendFileLabel().setVisible(true);
     		String ImagePath = Resource.OnLineHeadImagePath + user.getHeadImage();
     		setAndGetHeadImageLabel(ImagePath);

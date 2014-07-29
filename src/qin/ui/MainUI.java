@@ -101,7 +101,7 @@ public class MainUI{
     private JLabel getImageLabel() {
     	if(ImageLabel == null) {
     		String ImagePath = Resource.OnLineHeadImagePath + user.getHeadImage();
-    		System.out.println(ImagePath);
+    		
     		ImageLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
     		ImageLabel.setBounds(new Rectangle(20, 10, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
     		
@@ -150,7 +150,7 @@ public class MainUI{
     public JLabel getSearchLabel() {
     	if(SearchLabel == null) {
     		String ImagePath = Resource.SearchPicture;
-    		System.out.println(ImagePath);
+    		
     		SearchLabel = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(ImagePath))));
     		SearchLabel.setBounds(new Rectangle(MainUIWidth*3/10, MainUIHeight*9/10-10, Resource.HeadImaageWidth, Resource.HeadImaageHeight));
     	}

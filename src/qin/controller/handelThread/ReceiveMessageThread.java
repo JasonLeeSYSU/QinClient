@@ -26,16 +26,13 @@ public class ReceiveMessageThread implements Runnable{
 		if(isUserMessage) {
 			messageUI = QinUIController.getInstance().getPrivateMessageUIByID(message.getSourceId());
 			if(messageUI == null) {
-				System.out.println("找不到 目的主 的 Private MeaageUI");
 				return ;
 			}
 			msg = ((User)(messageUI.getObject())).getNickName() + " ";
 			
 		} else {
-			System.out.println("发送群信息： " + message.getSourceId() + "用户 --> 群" + message.getDestinationId());
 			messageUI = QinUIController.getInstance().getQunMessageUIByID(message.getDestinationId());
 			if(messageUI == null) {
-				System.out.println("找不到 目的主 的 Quns MeaageUI");
 				return ;
 			}
 			
@@ -65,7 +62,7 @@ public class ReceiveMessageThread implements Runnable{
 					if(username.equals("")) 
 						username = "匿名者<" + message.getSourceId() + ">";
 				} catch (ClassNotFoundException | IOException e) {
-					//e.printStackTrace();
+					e.printStackTrace();
 				}
 				
 			}

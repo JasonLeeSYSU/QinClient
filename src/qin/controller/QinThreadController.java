@@ -34,18 +34,15 @@ public class QinThreadController implements Runnable {
 	
 	@Override
 	public void run() {
-		System.out.println("客户端正在监听端口");
 		
 		while(true)
 		{
 			try
 			{
 				Socket socket = clientListenerSocket.accept();
-				
 				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 				QinMessagePacket packet = (QinMessagePacket) in.readObject();
 				
-				System.out.println("Order come: " + packet.getCommand());
 				if(packet.getCommand().equals(Command.RECEIVEPRIVATEMSG)) {
 					 // 接收到好友信息
 					Thread receivePrivateMessageThread = new Thread(new ReceiveMessageThread(packet.getMessageContainer().getMessage(), true));

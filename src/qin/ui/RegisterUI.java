@@ -460,8 +460,6 @@ public class RegisterUI implements MouseListener{
 			
 					String selectedProvince=((JComboBox)e.getSource()).getSelectedItem().toString();
 					
-					System.out.println(selectedProvince);
-					
 					JComboBox callee = getCityComboBox();
 					callee.removeAllItems();
 					

@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,6 +34,7 @@ public class LoginUI {
 	
     private JFrame jFrame = null;			
     private JPanel jContentPane = null;  
+    private JLabel settingLogo = null;
     private JTextField IDField = null;	  	
     private JPasswordField PasswordField = null;  
     private JButton loginButton = null;			
@@ -82,6 +84,7 @@ public class LoginUI {
         if (jContentPane == null) {
             jContentPane = new JPanel();
             jContentPane.setLayout(null);
+            jContentPane.add(getSettingLogo());
             jContentPane.add(getLogo());
             jContentPane.add(getIDTipLable());
             jContentPane.add(getIDField());
@@ -101,7 +104,28 @@ public class LoginUI {
     private JLabel getLogo() {
     	JLabel logo=new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(logoPath))));
     	logo.setBounds(new Rectangle(width/5, height/50, width*2/3,width*2/3));
+    	
+    	logo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					JOptionPane.showMessageDialog(null, "刘凌波 梁炜强 李嘉\n李梦琦 袁小琪 张钰yuan", "Qin开发者", JOptionPane.DEFAULT_OPTION);	
+				}
+			}
+		});
         return logo;
+    }
+    
+    /***
+     * 显示设置图标
+     * @return
+     */
+    public JLabel getSettingLogo() {
+    	if(settingLogo == null) {
+    		settingLogo = new JLabel(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource(Resource.SettingPicture))));
+    		settingLogo.setBounds(new Rectangle(0, 0, Resource.HeadImaageWidth, Resource.HeadImaageWidth));
+    	}
+        return settingLogo;
     }
     
     private JLabel getIDTipLable() {
@@ -147,7 +171,8 @@ public class LoginUI {
             PasswordField.setBounds(new Rectangle(width*2/8, height*19/30, width*3/5,height/10));
             
             PasswordField.addKeyListener(new KeyAdapter(){
-    				public void keyTyped(KeyEvent e) {			
+    				@SuppressWarnings("deprecation")
+					public void keyTyped(KeyEvent e) {			
     					if(PasswordField.getText().length() >= 9) {
     						e.consume(); //关键，屏蔽掉非法输入
     					}
@@ -170,8 +195,8 @@ public class LoginUI {
 	    			loginButton.setEnabled(true);
 	    		}
 	    		
-	    		public void mouseEntered(MouseEvent e) {
-	    			// TODO Auto-generated method stub
+	    		@SuppressWarnings("deprecation")
+				public void mouseEntered(MouseEvent e) {
 	    	          if(getIDField().getText().trim().length() > 0 && getPasswordField().getText().length() > 0) {
 	    	        	  loginButton.setEnabled(true);
 	    	          } else {
@@ -211,6 +236,25 @@ public class LoginUI {
     
     public void hideLoginUI() {
     	jFrame.setVisible(false);
+    }
+    
+    public String setServerIP() {
+    	String ip = null; 
+    	
+    	String check = "\\b((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\.((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\.((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\.((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\b";
+ 	    Pattern p = Pattern.compile(check);
+ 	    
+ 	    while(true) {
+ 	    	ip = JOptionPane.showInputDialog("输入服务器的IP地址");
+ 	    	
+ 	    	if(ip == null || p.matcher(ip).matches())
+ 	    		break;
+ 	    	else {
+ 	    		JOptionPane.showMessageDialog(null, ip + " 不是合法的IP地址。请重新输入。", "非法的IP地址", JOptionPane.DEFAULT_OPTION);
+ 	    	}
+ 	    }
+ 	    
+    	return ip;
     }
 }
 
